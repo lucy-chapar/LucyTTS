@@ -6,3 +6,5 @@ DerivedData/
 .env
 *.local
 *.xcuserstate
+*.xcuserdata/
+xcuserdata/
