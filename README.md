@@ -75,6 +75,32 @@ cd LiveFishTTS
 ./scripts/build-direct.sh
 ```
 
+## Run On iPhone
+
+The repository includes an Xcode project for the iPhone companion app:
+
+```sh
+open LiveFishTTS.xcodeproj
+```
+
+In Xcode:
+
+1. Select the `LiveFishTTSiOS` scheme.
+2. Open the target settings and choose your Apple ID team under Signing & Capabilities.
+3. Connect your iPhone or select a paired wireless iPhone.
+4. Press Run.
+
+The iPhone app includes:
+
+- Fish Audio API key setup in iOS Keychain
+- Voice preset selection and editing
+- Fish voice name import/fetch
+- Speed, volume, output format, latency, and S2-Pro style cue settings
+- Type, submit, immediately keep typing
+- Sequential queue playback through iPhone speaker, wired audio, AirPods, or Bluetooth
+
+The iPhone app does not include Meeting Mode. iOS does not support this app acting as a same-device virtual microphone for Google Meet or other apps.
+
 ## App Usage
 
 - Enter submits the current text.
@@ -134,7 +160,7 @@ Local monitoring is shown as a planned setting. For v1, monitoring through a sec
 
 ## Future iPhone Companion
 
-The iPhone companion should keep the same fast flow:
+The included iPhone companion keeps the same fast flow:
 
 - Type text.
 - Submit to Fish Audio.
@@ -143,7 +169,7 @@ The iPhone companion should keep the same fast flow:
 - Store the API key securely with Keychain.
 - Use native iOS audio playback APIs.
 
-iOS should be treated as a companion, not desktop parity. Do not assume an iPhone app can become a system-wide virtual microphone for Google Meet or other apps on the same device. Practical workflows are:
+iOS is treated as a companion, not desktop parity. Do not assume an iPhone app can become a system-wide virtual microphone for Google Meet or other apps on the same device. Practical workflows are:
 
 - Use the iPhone as a standalone speech device in the room.
 - Use the MacBook app for Google Meet virtual microphone routing.
