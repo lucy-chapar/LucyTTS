@@ -3,7 +3,6 @@ import SwiftUI
 struct iOSContentView: View {
     @EnvironmentObject private var settingsStore: iOSSettingsStore
     @EnvironmentObject private var speechQueue: iOSSpeechQueueManager
-    @FocusState private var inputFocused: Bool
     @State private var draftText = ""
     @State private var showSettings = false
 
@@ -35,9 +34,6 @@ struct iOSContentView: View {
             iOSSettingsView()
                 .environmentObject(settingsStore)
         }
-        .onAppear {
-            inputFocused = true
-        }
     }
 
     private var mainInterface: some View {
@@ -51,8 +47,7 @@ struct iOSContentView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            TextEditor(text: $draftText)
-                .focused($inputFocused)
+            iOSSubmitTextView(text: $draftText, onSubmit: submit)
                 .font(.title3)
                 .frame(minHeight: 220)
                 .padding(8)
@@ -128,6 +123,5 @@ struct iOSContentView: View {
         guard !captured.isEmpty else { return }
         speechQueue.enqueue(captured)
         draftText = ""
-        inputFocused = true
     }
 }
