@@ -10,7 +10,7 @@ final class iOSAudioPlaybackService: NSObject, AVAudioPlayerDelegate {
         try await withCheckedThrowingContinuation { continuation in
             do {
                 let session = AVAudioSession.sharedInstance()
-                try session.setCategory(.playback, mode: .spokenAudio, options: [.allowBluetooth, .duckOthers])
+                try session.setCategory(.playback, mode: .spokenAudio, options: [.duckOthers])
                 try session.setActive(true)
 
                 let player = try AVAudioPlayer(data: data)
@@ -31,12 +31,14 @@ final class iOSAudioPlaybackService: NSObject, AVAudioPlayerDelegate {
         stoppedByUser = true
         player?.stop()
         player = nil
+        deactivateSession()
         playbackContinuation?.resume(throwing: iOSPlaybackError.stopped)
         playbackContinuation = nil
     }
 
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         self.player = nil
+        deactivateSession()
         guard let continuation = playbackContinuation else { return }
         playbackContinuation = nil
         if flag {
@@ -50,8 +52,13 @@ final class iOSAudioPlaybackService: NSObject, AVAudioPlayerDelegate {
 
     func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
         self.player = nil
+        deactivateSession()
         playbackContinuation?.resume(throwing: error ?? iOSPlaybackError.playbackFailed)
         playbackContinuation = nil
+    }
+
+    private func deactivateSession() {
+        try? AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
     }
 }
 
