@@ -292,7 +292,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = HF2UXG9795;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Live Fish TTS";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -305,7 +305,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lucianchapar.LiveFishTTS;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lucianchapar.LiveFishTTS.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_DESTINATIONS = "iphoneos iphonesimulator";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -323,7 +323,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = HF2UXG9795;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Live Fish TTS";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
@@ -336,7 +336,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lucianchapar.LiveFishTTS;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lucianchapar.LiveFishTTS.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_DESTINATIONS = "iphoneos iphonesimulator";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
