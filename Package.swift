@@ -14,6 +14,11 @@ let package = Package(
         .executableTarget(
             name: "LiveFishTTS",
             path: "Sources/LiveFishTTS"
+        ),
+        .testTarget(
+            name: "LiveFishTTSTests",
+            dependencies: ["LiveFishTTS"],
+            path: "Tests/LiveFishTTSTests"
         )
     ]
 )
