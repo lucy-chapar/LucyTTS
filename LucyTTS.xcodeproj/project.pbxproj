@@ -7,42 +7,42 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		100000000000000000000001 /* FishAudioClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000001 /* FishAudioClient.swift */; };
-		100000000000000000000002 /* MsgpackEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000002 /* MsgpackEncoder.swift */; };
-		100000000000000000000003 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000003 /* KeychainService.swift */; };
-		100000000000000000000004 /* VoicePreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000004 /* VoicePreset.swift */; };
-		100000000000000000000005 /* LucyTTSiOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000005 /* LucyTTSiOSApp.swift */; };
-		100000000000000000000006 /* iOSSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000006 /* iOSSettingsStore.swift */; };
-		100000000000000000000007 /* iOSAudioPlaybackService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000007 /* iOSAudioPlaybackService.swift */; };
-		100000000000000000000008 /* iOSSpeechQueueManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000008 /* iOSSpeechQueueManager.swift */; };
-		100000000000000000000009 /* iOSContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000009 /* iOSContentView.swift */; };
-		100000000000000000000010 /* iOSSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000010 /* iOSSettingsView.swift */; };
-		100000000000000000000011 /* iOSSubmitTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000012 /* iOSSubmitTextView.swift */; };
-		100000000000000000000012 /* iOSLucyTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000013 /* iOSLucyTheme.swift */; };
-		100000000000000000000013 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000014 /* Assets.xcassets */; };
-		100000000000000000000014 /* PhrasePresetCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000015 /* PhrasePresetCatalog.swift */; };
-		100000000000000000000015 /* VoiceSamplePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000016 /* VoiceSamplePlayer.swift */; };
-		100000000000000000000016 /* FishVoiceBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000017 /* FishVoiceBrowserView.swift */; };
+		100000000000000000000001 /* Sources/LucyTTS/API/FishAudioClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000001 /* Sources/LucyTTS/API/FishAudioClient.swift */; };
+		100000000000000000000002 /* Sources/LucyTTS/API/MsgpackEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000002 /* Sources/LucyTTS/API/MsgpackEncoder.swift */; };
+		100000000000000000000003 /* Sources/LucyTTS/Settings/KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000003 /* Sources/LucyTTS/Settings/KeychainService.swift */; };
+		100000000000000000000004 /* Sources/LucyTTS/Settings/VoicePreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000004 /* Sources/LucyTTS/Settings/VoicePreset.swift */; };
+		100000000000000000000005 /* Sources/LucyTTSiOS/LucyTTSiOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000005 /* Sources/LucyTTSiOS/LucyTTSiOSApp.swift */; };
+		100000000000000000000006 /* Sources/LucyTTSiOS/iOSSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000006 /* Sources/LucyTTSiOS/iOSSettingsStore.swift */; };
+		100000000000000000000007 /* Sources/LucyTTSiOS/iOSAudioPlaybackService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000007 /* Sources/LucyTTSiOS/iOSAudioPlaybackService.swift */; };
+		100000000000000000000008 /* Sources/LucyTTSiOS/iOSSpeechQueueManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000008 /* Sources/LucyTTSiOS/iOSSpeechQueueManager.swift */; };
+		100000000000000000000009 /* Sources/LucyTTSiOS/iOSContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000009 /* Sources/LucyTTSiOS/iOSContentView.swift */; };
+		100000000000000000000010 /* Sources/LucyTTSiOS/iOSSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000010 /* Sources/LucyTTSiOS/iOSSettingsView.swift */; };
+		100000000000000000000011 /* Sources/LucyTTSiOS/iOSSubmitTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000012 /* Sources/LucyTTSiOS/iOSSubmitTextView.swift */; };
+		100000000000000000000012 /* Sources/LucyTTSiOS/iOSLucyTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000013 /* Sources/LucyTTSiOS/iOSLucyTheme.swift */; };
+		100000000000000000000013 /* Sources/LucyTTSiOS/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000014 /* Sources/LucyTTSiOS/Assets.xcassets */; };
+		100000000000000000000014 /* Sources/LucyTTS/Phrases/PhrasePresetCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000015 /* Sources/LucyTTS/Phrases/PhrasePresetCatalog.swift */; };
+		100000000000000000000015 /* Sources/LucyTTS/API/VoiceSamplePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000016 /* Sources/LucyTTS/API/VoiceSamplePlayer.swift */; };
+		100000000000000000000016 /* Sources/LucyTTS/UI/FishVoiceBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000017 /* Sources/LucyTTS/UI/FishVoiceBrowserView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		200000000000000000000001 /* FishAudioClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/API/FishAudioClient.swift; sourceTree = "<group>"; };
-		200000000000000000000002 /* MsgpackEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/API/MsgpackEncoder.swift; sourceTree = "<group>"; };
-		200000000000000000000003 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/Settings/KeychainService.swift; sourceTree = "<group>"; };
-		200000000000000000000004 /* VoicePreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/Settings/VoicePreset.swift; sourceTree = "<group>"; };
-		200000000000000000000005 /* LucyTTSiOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/LucyTTSiOSApp.swift; sourceTree = "<group>"; };
-		200000000000000000000006 /* iOSSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSSettingsStore.swift; sourceTree = "<group>"; };
-		200000000000000000000007 /* iOSAudioPlaybackService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSAudioPlaybackService.swift; sourceTree = "<group>"; };
-		200000000000000000000008 /* iOSSpeechQueueManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSSpeechQueueManager.swift; sourceTree = "<group>"; };
-		200000000000000000000009 /* iOSContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSContentView.swift; sourceTree = "<group>"; };
-		200000000000000000000010 /* iOSSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSSettingsView.swift; sourceTree = "<group>"; };
+		200000000000000000000001 /* Sources/LucyTTS/API/FishAudioClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/API/FishAudioClient.swift; sourceTree = "<group>"; };
+		200000000000000000000002 /* Sources/LucyTTS/API/MsgpackEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/API/MsgpackEncoder.swift; sourceTree = "<group>"; };
+		200000000000000000000003 /* Sources/LucyTTS/Settings/KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/Settings/KeychainService.swift; sourceTree = "<group>"; };
+		200000000000000000000004 /* Sources/LucyTTS/Settings/VoicePreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/Settings/VoicePreset.swift; sourceTree = "<group>"; };
+		200000000000000000000005 /* Sources/LucyTTSiOS/LucyTTSiOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/LucyTTSiOSApp.swift; sourceTree = "<group>"; };
+		200000000000000000000006 /* Sources/LucyTTSiOS/iOSSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSSettingsStore.swift; sourceTree = "<group>"; };
+		200000000000000000000007 /* Sources/LucyTTSiOS/iOSAudioPlaybackService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSAudioPlaybackService.swift; sourceTree = "<group>"; };
+		200000000000000000000008 /* Sources/LucyTTSiOS/iOSSpeechQueueManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSSpeechQueueManager.swift; sourceTree = "<group>"; };
+		200000000000000000000009 /* Sources/LucyTTSiOS/iOSContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSContentView.swift; sourceTree = "<group>"; };
+		200000000000000000000010 /* Sources/LucyTTSiOS/iOSSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSSettingsView.swift; sourceTree = "<group>"; };
 		200000000000000000000011 /* LucyTTSiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LucyTTSiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		200000000000000000000012 /* iOSSubmitTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSSubmitTextView.swift; sourceTree = "<group>"; };
-		200000000000000000000013 /* iOSLucyTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSLucyTheme.swift; sourceTree = "<group>"; };
-		200000000000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/LucyTTSiOS/Assets.xcassets; sourceTree = "<group>"; };
-		200000000000000000000015 /* PhrasePresetCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/Phrases/PhrasePresetCatalog.swift; sourceTree = "<group>"; };
-		200000000000000000000016 /* VoiceSamplePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/API/VoiceSamplePlayer.swift; sourceTree = "<group>"; };
-		200000000000000000000017 /* FishVoiceBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/UI/FishVoiceBrowserView.swift; sourceTree = "<group>"; };
+		200000000000000000000012 /* Sources/LucyTTSiOS/iOSSubmitTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSSubmitTextView.swift; sourceTree = "<group>"; };
+		200000000000000000000013 /* Sources/LucyTTSiOS/iOSLucyTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSLucyTheme.swift; sourceTree = "<group>"; };
+		200000000000000000000014 /* Sources/LucyTTSiOS/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/LucyTTSiOS/Assets.xcassets; sourceTree = "<group>"; };
+		200000000000000000000015 /* Sources/LucyTTS/Phrases/PhrasePresetCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/Phrases/PhrasePresetCatalog.swift; sourceTree = "<group>"; };
+		200000000000000000000016 /* Sources/LucyTTS/API/VoiceSamplePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/API/VoiceSamplePlayer.swift; sourceTree = "<group>"; };
+		200000000000000000000017 /* Sources/LucyTTS/UI/FishVoiceBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/UI/FishVoiceBrowserView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,13 +68,13 @@
 		400000000000000000000002 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				200000000000000000000001 /* FishAudioClient.swift */,
-				200000000000000000000002 /* MsgpackEncoder.swift */,
-				200000000000000000000003 /* KeychainService.swift */,
-				200000000000000000000004 /* VoicePreset.swift */,
-				200000000000000000000015 /* PhrasePresetCatalog.swift */,
-				200000000000000000000016 /* VoiceSamplePlayer.swift */,
-				200000000000000000000017 /* FishVoiceBrowserView.swift */,
+				200000000000000000000001 /* Sources/LucyTTS/API/FishAudioClient.swift */,
+				200000000000000000000002 /* Sources/LucyTTS/API/MsgpackEncoder.swift */,
+				200000000000000000000003 /* Sources/LucyTTS/Settings/KeychainService.swift */,
+				200000000000000000000004 /* Sources/LucyTTS/Settings/VoicePreset.swift */,
+				200000000000000000000015 /* Sources/LucyTTS/Phrases/PhrasePresetCatalog.swift */,
+				200000000000000000000016 /* Sources/LucyTTS/API/VoiceSamplePlayer.swift */,
+				200000000000000000000017 /* Sources/LucyTTS/UI/FishVoiceBrowserView.swift */,
 			);
 			name = Shared;
 			sourceTree = "<group>";
@@ -82,15 +82,15 @@
 		400000000000000000000003 /* iPhone App */ = {
 			isa = PBXGroup;
 			children = (
-				200000000000000000000005 /* LucyTTSiOSApp.swift */,
-				200000000000000000000006 /* iOSSettingsStore.swift */,
-				200000000000000000000007 /* iOSAudioPlaybackService.swift */,
-				200000000000000000000008 /* iOSSpeechQueueManager.swift */,
-				200000000000000000000009 /* iOSContentView.swift */,
-				200000000000000000000012 /* iOSSubmitTextView.swift */,
-				200000000000000000000010 /* iOSSettingsView.swift */,
-				200000000000000000000013 /* iOSLucyTheme.swift */,
-				200000000000000000000014 /* Assets.xcassets */,
+				200000000000000000000005 /* Sources/LucyTTSiOS/LucyTTSiOSApp.swift */,
+				200000000000000000000006 /* Sources/LucyTTSiOS/iOSSettingsStore.swift */,
+				200000000000000000000007 /* Sources/LucyTTSiOS/iOSAudioPlaybackService.swift */,
+				200000000000000000000008 /* Sources/LucyTTSiOS/iOSSpeechQueueManager.swift */,
+				200000000000000000000009 /* Sources/LucyTTSiOS/iOSContentView.swift */,
+				200000000000000000000012 /* Sources/LucyTTSiOS/iOSSubmitTextView.swift */,
+				200000000000000000000010 /* Sources/LucyTTSiOS/iOSSettingsView.swift */,
+				200000000000000000000013 /* Sources/LucyTTSiOS/iOSLucyTheme.swift */,
+				200000000000000000000014 /* Sources/LucyTTSiOS/Assets.xcassets */,
 			);
 			name = "iPhone App";
 			sourceTree = "<group>";
@@ -162,7 +162,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				100000000000000000000013 /* Assets.xcassets in Resources */,
+				100000000000000000000013 /* Sources/LucyTTSiOS/Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,21 +173,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				100000000000000000000001 /* FishAudioClient.swift in Sources */,
-				100000000000000000000002 /* MsgpackEncoder.swift in Sources */,
-				100000000000000000000003 /* KeychainService.swift in Sources */,
-				100000000000000000000004 /* VoicePreset.swift in Sources */,
-				100000000000000000000005 /* LucyTTSiOSApp.swift in Sources */,
-				100000000000000000000006 /* iOSSettingsStore.swift in Sources */,
-				100000000000000000000007 /* iOSAudioPlaybackService.swift in Sources */,
-				100000000000000000000008 /* iOSSpeechQueueManager.swift in Sources */,
-				100000000000000000000009 /* iOSContentView.swift in Sources */,
-				100000000000000000000011 /* iOSSubmitTextView.swift in Sources */,
-				100000000000000000000010 /* iOSSettingsView.swift in Sources */,
-				100000000000000000000012 /* iOSLucyTheme.swift in Sources */,
-				100000000000000000000014 /* PhrasePresetCatalog.swift in Sources */,
-				100000000000000000000015 /* VoiceSamplePlayer.swift in Sources */,
-				100000000000000000000016 /* FishVoiceBrowserView.swift in Sources */,
+				100000000000000000000001 /* Sources/LucyTTS/API/FishAudioClient.swift in Sources */,
+				100000000000000000000002 /* Sources/LucyTTS/API/MsgpackEncoder.swift in Sources */,
+				100000000000000000000003 /* Sources/LucyTTS/Settings/KeychainService.swift in Sources */,
+				100000000000000000000004 /* Sources/LucyTTS/Settings/VoicePreset.swift in Sources */,
+				100000000000000000000005 /* Sources/LucyTTSiOS/LucyTTSiOSApp.swift in Sources */,
+				100000000000000000000006 /* Sources/LucyTTSiOS/iOSSettingsStore.swift in Sources */,
+				100000000000000000000007 /* Sources/LucyTTSiOS/iOSAudioPlaybackService.swift in Sources */,
+				100000000000000000000008 /* Sources/LucyTTSiOS/iOSSpeechQueueManager.swift in Sources */,
+				100000000000000000000009 /* Sources/LucyTTSiOS/iOSContentView.swift in Sources */,
+				100000000000000000000011 /* Sources/LucyTTSiOS/iOSSubmitTextView.swift in Sources */,
+				100000000000000000000010 /* Sources/LucyTTSiOS/iOSSettingsView.swift in Sources */,
+				100000000000000000000012 /* Sources/LucyTTSiOS/iOSLucyTheme.swift in Sources */,
+				100000000000000000000014 /* Sources/LucyTTS/Phrases/PhrasePresetCatalog.swift in Sources */,
+				100000000000000000000015 /* Sources/LucyTTS/API/VoiceSamplePlayer.swift in Sources */,
+				100000000000000000000016 /* Sources/LucyTTS/UI/FishVoiceBrowserView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -245,7 +245,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -300,7 +300,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -313,17 +313,17 @@
 		800000000000000000000003 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-					ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-					CODE_SIGN_STYLE = Automatic;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HF2UXG9795;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Lucy TTS";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -345,17 +345,17 @@
 		800000000000000000000004 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-					ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-					CODE_SIGN_STYLE = Automatic;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HF2UXG9795;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Lucy TTS";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
