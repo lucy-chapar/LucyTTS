@@ -2,12 +2,22 @@ import AppKit
 import SwiftUI
 
 struct SubmitTextView: NSViewRepresentable {
+    struct PendingInsertion: Equatable, Identifiable {
+        let id: UUID
+        let text: String
+
+        init(text: String) {
+            self.id = UUID()
+            self.text = text
+        }
+    }
+
     @Binding var text: String
     var placeholder: String
     var checkSpelling: Bool
     var autoCorrectSpelling: Bool
     var checkGrammar: Bool
-    @Binding var pendingInsertion: String?
+    @Binding var pendingInsertion: PendingInsertion?
     var onSubmit: () -> Void
 
     func makeCoordinator() -> Coordinator {
@@ -42,10 +52,14 @@ struct SubmitTextView: NSViewRepresentable {
         if textView.string != text {
             textView.string = text
         }
-        if let insertion = pendingInsertion {
-            insert(insertion, into: textView)
+        if let insertion = pendingInsertion,
+           context.coordinator.lastAppliedInsertionID != insertion.id {
+            context.coordinator.lastAppliedInsertionID = insertion.id
+            insert(insertion.text, into: textView)
             DispatchQueue.main.async {
-                pendingInsertion = nil
+                if pendingInsertion?.id == insertion.id {
+                    pendingInsertion = nil
+                }
             }
         }
         applyTypingAssistance(to: textView)
@@ -70,6 +84,7 @@ struct SubmitTextView: NSViewRepresentable {
 
     final class Coordinator: NSObject, NSTextViewDelegate {
         var parent: SubmitTextView
+        var lastAppliedInsertionID: UUID?
 
         init(_ parent: SubmitTextView) {
             self.parent = parent

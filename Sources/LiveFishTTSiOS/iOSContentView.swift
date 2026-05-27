@@ -1,13 +1,12 @@
 import SwiftUI
 
 struct iOSContentView: View {
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @EnvironmentObject private var settingsStore: iOSSettingsStore
     @EnvironmentObject private var speechQueue: iOSSpeechQueueManager
     @State private var draftText = ""
+    @State private var draftSelection = NSRange(location: 0, length: 0)
     @State private var showSettings = false
     @State private var showEmotePicker = false
-    @State private var pendingTextInsertion: String?
 
     var body: some View {
         NavigationStack {
@@ -40,16 +39,6 @@ struct iOSContentView: View {
             iOSSettingsView()
                 .environmentObject(settingsStore)
         }
-        .sheet(isPresented: $showEmotePicker) {
-            iOSEmotePicker(
-                onClose: {
-                    showEmotePicker = false
-                },
-                onSelect: insertEmote
-            )
-            .presentationDetents([.medium, .large])
-            .presentationDragIndicator(.visible)
-        }
     }
 
     private var mainInterface: some View {
@@ -68,7 +57,7 @@ struct iOSContentView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            iOSSubmitTextView(text: $draftText, pendingInsertion: $pendingTextInsertion, onSubmit: submit)
+            iOSSubmitTextView(text: $draftText, selectedRange: $draftSelection, onSubmit: submit)
                 .font(.title3)
                 .frame(minHeight: 220)
                 .padding(8)
@@ -120,51 +109,57 @@ struct iOSContentView: View {
             .clipShape(RoundedRectangle(cornerRadius: 10))
             }
             .padding()
+
+            if showEmotePicker {
+                emoteOverlay
+            }
         }
+        .animation(.easeInOut(duration: 0.16), value: showEmotePicker)
     }
 
     private var commandButtons: some View {
-        Group {
-            if horizontalSizeClass == .compact {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack(spacing: 12) {
-                        speakButton
-                        stopButton
-                    }
-                    HStack(spacing: 12) {
-                        clearQueueButton
-                        emoteMenuButton
-                    }
-                }
-            } else {
-                HStack(spacing: 12) {
-                    speakButton
-                    stopButton
-                    clearQueueButton
-                    emoteMenuButton
-                }
-            }
+        HStack(spacing: 8) {
+            speakButton
+            stopButton
+            clearQueueButton
+            emoteMenuButton
         }
+        .font(.callout.weight(.semibold))
+        .controlSize(.small)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var speakButton: some View {
-        Button("Speak", action: submit)
+        Button(action: submit) {
+            Text("Speak")
+                .lineLimit(1)
+                .minimumScaleFactor(0.82)
+        }
             .buttonStyle(.borderedProminent)
             .tint(LucyTheme.hotPink)
     }
 
     private var stopButton: some View {
-        Button("Stop current") {
+        Button {
             speechQueue.stopCurrent()
+        } label: {
+            Text("Stop")
+                .lineLimit(1)
+                .minimumScaleFactor(0.82)
         }
+        .buttonStyle(.bordered)
         .tint(LucyTheme.plum)
     }
 
     private var clearQueueButton: some View {
-        Button("Clear queue") {
+        Button {
             speechQueue.clearQueue()
+        } label: {
+            Text("Clear queue")
+                .lineLimit(1)
+                .minimumScaleFactor(0.82)
         }
+        .buttonStyle(.bordered)
         .tint(LucyTheme.plum)
     }
 
@@ -172,6 +167,26 @@ struct iOSContentView: View {
         EmoteButton {
             showEmotePicker = true
         }
+    }
+
+    private var emoteOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.18)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    showEmotePicker = false
+                }
+
+            iOSEmotePicker(
+                onClose: {
+                    showEmotePicker = false
+                },
+                onSelect: insertEmote
+            )
+            .padding(.horizontal, 12)
+            .transition(.scale(scale: 0.98).combined(with: .opacity))
+        }
+        .zIndex(10)
     }
 
     private var setupView: some View {
@@ -201,11 +216,22 @@ struct iOSContentView: View {
         guard !captured.isEmpty else { return }
         speechQueue.enqueue(captured)
         draftText = ""
+        draftSelection = NSRange(location: 0, length: 0)
     }
 
     private func insertEmote(_ tag: String) {
-        pendingTextInsertion = "\(tag) "
+        let insertion = "\(tag) "
+        let original = draftText as NSString
+        let range = clamped(draftSelection, in: original)
+        draftText = original.replacingCharacters(in: range, with: insertion)
+        draftSelection = NSRange(location: range.location + (insertion as NSString).length, length: 0)
         showEmotePicker = false
+    }
+
+    private func clamped(_ range: NSRange, in text: NSString) -> NSRange {
+        let location = min(max(range.location, 0), text.length)
+        let length = min(max(range.length, 0), text.length - location)
+        return NSRange(location: location, length: length)
     }
 }
 
@@ -232,11 +258,11 @@ private struct EmoteButton: View {
     var body: some View {
         Button(action: action) {
             Text("Emote")
-                .font(.body.weight(.semibold))
+                .font(.callout.weight(.semibold))
                 .foregroundStyle(.white)
                 .lineLimit(1)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
                 .background(
                     LinearGradient(
                         colors: [.red, .orange, .yellow, .green, .blue, .purple],
@@ -255,46 +281,50 @@ private struct iOSEmotePicker: View {
     var onSelect: (String) -> Void
 
     private let columns = [
-        GridItem(.adaptive(minimum: 148), spacing: 10)
+        GridItem(.flexible(minimum: 78), spacing: 8),
+        GridItem(.flexible(minimum: 78), spacing: 8),
+        GridItem(.flexible(minimum: 78), spacing: 8)
     ]
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                LucyTheme.background
-                    .ignoresSafeArea()
-
-                ScrollView {
-                    LazyVGrid(columns: columns, spacing: 12) {
-                        ForEach(fishEmoteTags, id: \.self) { tag in
-                            Button {
-                                onSelect(tag)
-                            } label: {
-                                Text(tag)
-                                    .font(.body.weight(.semibold))
-                                    .foregroundStyle(LucyTheme.hotPink)
-                                    .lineLimit(2)
-                                    .minimumScaleFactor(0.82)
-                                    .multilineTextAlignment(.center)
-                                    .frame(maxWidth: .infinity, minHeight: 48)
-                                    .padding(.horizontal, 12)
-                                    .background(LucyTheme.hotPink.opacity(0.22))
-                                    .clipShape(Capsule())
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(16)
-                }
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Emote")
+                    .font(.headline)
+                    .foregroundStyle(LucyTheme.plum)
+                Spacer()
+                Button("Close", action: onClose)
+                    .font(.callout.weight(.semibold))
+                    .tint(LucyTheme.plum)
             }
-            .navigationTitle("Emote")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close", action: onClose)
-                        .tint(LucyTheme.plum)
+
+            LazyVGrid(columns: columns, spacing: 8) {
+                ForEach(fishEmoteTags, id: \.self) { tag in
+                    Button {
+                        onSelect(tag)
+                    } label: {
+                        Text(tag)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(LucyTheme.hotPink)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.72)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity, minHeight: 40)
+                            .padding(.horizontal, 6)
+                            .background(LucyTheme.hotPink.opacity(0.22))
+                            .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
+        .padding(14)
+        .background(LucyTheme.background)
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(LucyTheme.hotPink.opacity(0.26), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.18), radius: 18, x: 0, y: 10)
     }
 }

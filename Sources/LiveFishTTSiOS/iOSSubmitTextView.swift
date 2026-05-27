@@ -3,7 +3,7 @@ import UIKit
 
 struct iOSSubmitTextView: UIViewRepresentable {
     @Binding var text: String
-    @Binding var pendingInsertion: String?
+    @Binding var selectedRange: NSRange
     var onSubmit: () -> Void
 
     func makeCoordinator() -> Coordinator {
@@ -47,12 +47,7 @@ struct iOSSubmitTextView: UIViewRepresentable {
     func updateUIView(_ textView: UITextView, context: Context) {
         if textView.text != text {
             textView.text = text
-        }
-        if let insertion = pendingInsertion {
-            insert(insertion, into: textView)
-            DispatchQueue.main.async {
-                pendingInsertion = nil
-            }
+            textView.selectedRange = clamped(selectedRange, in: textView.text)
         }
 
         DispatchQueue.main.async {
@@ -62,14 +57,11 @@ struct iOSSubmitTextView: UIViewRepresentable {
         }
     }
 
-    private func insert(_ insertion: String, into textView: UITextView) {
-        if let selectedRange = textView.selectedTextRange {
-            textView.replace(selectedRange, withText: insertion)
-        } else {
-            textView.text.append(insertion)
-            textView.selectedRange = NSRange(location: textView.text.count, length: 0)
-        }
-        text = textView.text
+    private func clamped(_ range: NSRange, in text: String) -> NSRange {
+        let maximumLocation = (text as NSString).length
+        let location = min(max(range.location, 0), maximumLocation)
+        let length = min(max(range.length, 0), maximumLocation - location)
+        return NSRange(location: location, length: length)
     }
 
     final class Coordinator: NSObject, UITextViewDelegate {
@@ -81,6 +73,11 @@ struct iOSSubmitTextView: UIViewRepresentable {
 
         func textViewDidChange(_ textView: UITextView) {
             parent.text = textView.text
+            parent.selectedRange = textView.selectedRange
+        }
+
+        func textViewDidChangeSelection(_ textView: UITextView) {
+            parent.selectedRange = textView.selectedRange
         }
 
         func textView(

@@ -7,7 +7,7 @@ struct ContentView: View {
     @State private var draftText = ""
     @State private var showSettings = false
     @State private var showEmotePicker = false
-    @State private var pendingTextInsertion: String?
+    @State private var pendingTextInsertion: SubmitTextView.PendingInsertion?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -86,7 +86,7 @@ struct ContentView: View {
                     .keyboardShortcut(.return, modifiers: [])
                     .buttonStyle(.borderedProminent)
                     .tint(LucyTheme.hotPink)
-                Button("Stop current") {
+                Button("Stop") {
                     speechQueue.stopCurrent()
                 }
                 .tint(LucyTheme.plum)
@@ -163,7 +163,7 @@ struct ContentView: View {
     }
 
     private func insertEmote(_ tag: String) {
-        pendingTextInsertion = "\(tag) "
+        pendingTextInsertion = SubmitTextView.PendingInsertion(text: "\(tag) ")
         showEmotePicker = false
     }
 }
