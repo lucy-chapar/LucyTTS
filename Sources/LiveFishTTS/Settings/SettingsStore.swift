@@ -163,13 +163,15 @@ final class SettingsStore: ObservableObject {
         apiKeyStatus = .failed(reason: reason)
     }
 
-    func addVoicePreset() {
+    @discardableResult
+    func addVoicePreset() -> VoicePreset {
         let preset = VoicePreset(name: "New voice", referenceID: "")
         var updatedPresets = voicePresets
         updatedPresets.append(preset)
         voicePresets = updatedPresets
         selectedVoicePresetID = preset.id.uuidString
         saveSettings()
+        return preset
     }
 
     func removeVoicePreset(id: UUID) {

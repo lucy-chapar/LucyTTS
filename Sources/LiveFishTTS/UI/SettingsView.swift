@@ -1,4 +1,3 @@
-import AppKit
 import SwiftUI
 
 struct SettingsView: View {
@@ -52,9 +51,6 @@ struct SettingsView: View {
                         SecureField("Fish Audio API key", text: $apiKey)
                             .textFieldStyle(.roundedBorder)
                     }
-                    Button("Paste") {
-                        pasteIntoAPIKey()
-                    }
                     Toggle("Show", isOn: $showAPIKey)
                         .toggleStyle(.checkbox)
                 }
@@ -90,6 +86,7 @@ struct SettingsView: View {
         }
     }
 
+    @ViewBuilder
     private var voiceSettings: some View {
         GroupBox("Voice") {
             VStack(alignment: .leading, spacing: 10) {
@@ -100,7 +97,7 @@ struct SettingsView: View {
                 }
                 HStack {
                     Button("Add voice") {
-                        settingsStore.addVoicePreset()
+                        _ = settingsStore.addVoicePreset()
                     }
                     Button(loadingVoices ? "Loading..." : "Import my Fish voices") {
                         importFishVoices()
@@ -117,10 +114,16 @@ struct SettingsView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                VStack(spacing: 8) {
-                    ForEach(settingsStore.voicePresets) { preset in
-                        voicePresetEditor(preset: voicePresetBinding(for: preset))
-                    }
+                if let preset = settingsStore.selectedVoicePreset {
+                    MacVoicePresetEditor(
+                        preset: preset,
+                        isSelected: settingsStore.selectedVoicePresetID == preset.id.uuidString,
+                        canRemove: settingsStore.voicePresets.count > 1,
+                        onSave: { settingsStore.updateVoicePreset($0) },
+                        onUse: { id in settingsStore.useVoicePreset(id: id) },
+                        onRemove: { id in settingsStore.removeVoicePreset(id: id) }
+                    )
+                    .id(preset.id)
                 }
                 voiceTuningSettings
             }
@@ -167,36 +170,6 @@ struct SettingsView: View {
                 Text("Normal").tag("normal")
             }
         }
-    }
-
-    private func voicePresetEditor(preset presetBinding: Binding<VoicePreset>) -> some View {
-        let preset = presetBinding.wrappedValue
-
-        return VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                TextField("Name", text: presetBinding.name)
-                Button(settingsStore.selectedVoicePresetID == preset.id.uuidString ? "Selected" : "Use") {
-                    settingsStore.useVoicePreset(id: preset.id)
-                }
-                .disabled(settingsStore.selectedVoicePresetID == preset.id.uuidString)
-                Button("Remove") {
-                    settingsStore.removeVoicePreset(id: preset.id)
-                }
-                .disabled(settingsStore.voicePresets.count <= 1)
-            }
-            HStack {
-                TextField("Reference ID", text: presetBinding.referenceID)
-                    .font(.system(.body, design: .monospaced))
-                Button("Paste") {
-                    pasteIntoVoiceReference(id: preset.id)
-                }
-            }
-            TextField("Notes", text: presetBinding.notes)
-                .font(.caption)
-        }
-        .padding(8)
-        .background(Color(nsColor: .controlBackgroundColor))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
     private var typingSettings: some View {
@@ -282,31 +255,6 @@ struct SettingsView: View {
         )
     }
 
-    private func voicePresetBinding(for preset: VoicePreset) -> Binding<VoicePreset> {
-        Binding(
-            get: {
-                settingsStore.voicePresets.first { $0.id == preset.id } ?? preset
-            },
-            set: { updatedPreset in
-                settingsStore.updateVoicePreset(updatedPreset)
-            }
-        )
-    }
-
-    private func pasteIntoAPIKey() {
-        if let pasted = NSPasteboard.general.string(forType: .string) {
-            apiKey = pasted.trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-    }
-
-    private func pasteIntoVoiceReference(id: UUID) {
-        guard let pasted = NSPasteboard.general.string(forType: .string) else { return }
-        guard let index = settingsStore.voicePresets.firstIndex(where: { $0.id == id }) else { return }
-        var preset = settingsStore.voicePresets[index]
-        preset.referenceID = pasted.trimmingCharacters(in: .whitespacesAndNewlines)
-        settingsStore.updateVoicePreset(preset)
-    }
-
     private func testAPIKey() {
         testingKey = true
         let keyToTest = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -380,6 +328,89 @@ struct SettingsView: View {
                     loadingVoices = false
                 }
             }
+        }
+    }
+}
+
+private struct MacVoicePresetEditor: View {
+    let preset: VoicePreset
+    let isSelected: Bool
+    let canRemove: Bool
+    let onSave: (VoicePreset) -> Void
+    let onUse: (UUID) -> Void
+    let onRemove: (UUID) -> Void
+
+    @State private var name: String
+    @State private var referenceID: String
+    @State private var notes: String
+
+    init(
+        preset: VoicePreset,
+        isSelected: Bool,
+        canRemove: Bool,
+        onSave: @escaping (VoicePreset) -> Void,
+        onUse: @escaping (UUID) -> Void,
+        onRemove: @escaping (UUID) -> Void
+    ) {
+        self.preset = preset
+        self.isSelected = isSelected
+        self.canRemove = canRemove
+        self.onSave = onSave
+        self.onUse = onUse
+        self.onRemove = onRemove
+        _name = State(initialValue: preset.name)
+        _referenceID = State(initialValue: preset.referenceID)
+        _notes = State(initialValue: preset.notes)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            TextField("Name", text: $name)
+            TextField("Reference ID", text: $referenceID)
+                .font(.system(.body, design: .monospaced))
+            TextField("Notes", text: $notes)
+                .font(.caption)
+            HStack {
+                Button("Save voice") {
+                    saveIfChanged()
+                }
+                Button(isSelected ? "Selected" : "Use") {
+                    saveIfChanged()
+                    onUse(preset.id)
+                }
+                .disabled(isSelected)
+                Button("Remove") {
+                    onRemove(preset.id)
+                }
+                .disabled(!canRemove)
+            }
+        }
+        .padding(8)
+        .background(Color(nsColor: .controlBackgroundColor))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .onDisappear {
+            saveIfChanged()
+        }
+    }
+
+    private var editedPreset: VoicePreset {
+        VoicePreset(
+            id: preset.id,
+            name: name,
+            referenceID: referenceID.trimmingCharacters(in: .whitespacesAndNewlines),
+            notes: notes
+        )
+    }
+
+    private var hasChanges: Bool {
+        name != preset.name
+            || referenceID.trimmingCharacters(in: .whitespacesAndNewlines) != preset.referenceID
+            || notes != preset.notes
+    }
+
+    private func saveIfChanged() {
+        if hasChanges {
+            onSave(editedPreset)
         }
     }
 }
