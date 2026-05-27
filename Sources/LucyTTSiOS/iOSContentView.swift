@@ -358,7 +358,9 @@ private struct iOSPhraseCatalogView: View {
 
                 VStack(spacing: 14) {
                     searchField
-                    categoryChips
+                    if normalizedSearch.isEmpty {
+                        categoryChips
+                    }
                     catalogBody
                 }
                 .padding()
@@ -378,13 +380,62 @@ private struct iOSPhraseCatalogView: View {
 
     @ViewBuilder
     private var catalogBody: some View {
-        if selectedCategoryID == "history" {
+        if !normalizedSearch.isEmpty {
+            searchResultsContent
+        } else if selectedCategoryID == "history" {
             historyContent
         } else if let selectedCategory {
             phraseContent(for: selectedCategory)
         } else {
             emptyState("No phrases yet.")
         }
+    }
+
+    private var searchResultsContent: some View {
+        let groups = searchResultGroups
+        let historyMatches = filteredHistoryItems
+        return ScrollView {
+            LazyVStack(alignment: .leading, spacing: 12) {
+                if groups.isEmpty && historyMatches.isEmpty {
+                    emptyState("No phrases match \u{201C}\(normalizedSearch)\u{201D}.")
+                } else {
+                    ForEach(groups, id: \.category.id) { group in
+                        sectionHeader(group.category.name)
+                        ForEach(group.phrases) { phrase in
+                            phraseButton(text: phrase.text) {
+                                onSelectPhrase(phrase.text)
+                            }
+                        }
+                    }
+                    if !historyMatches.isEmpty {
+                        sectionHeader("History")
+                        ForEach(historyMatches) { item in
+                            historyRow(item) {
+                                onSelectPhrase(item.text)
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+        }
+    }
+
+    private var searchResultGroups: [(category: PhrasePresetCategory, phrases: [PhrasePreset])] {
+        guard !normalizedSearch.isEmpty else { return [] }
+        return catalog.categories.compactMap { category in
+            let matches = category.phrases.filter { matchesSearch($0.text) }
+            if matches.isEmpty { return nil }
+            return (category, matches)
+        }
+    }
+
+    private func sectionHeader(_ title: String) -> some View {
+        Text(title)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(LucyTheme.plum.opacity(0.62))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 2)
     }
 
     private var searchField: some View {
@@ -473,16 +524,27 @@ private struct iOSPhraseCatalogView: View {
 
     private func filteredPhrases(in category: PhrasePresetCategory) -> [PhrasePreset] {
         guard !normalizedSearch.isEmpty else { return category.phrases }
-        return category.phrases.filter {
-            $0.text.localizedCaseInsensitiveContains(normalizedSearch)
-        }
+        return category.phrases.filter { matchesSearch($0.text) }
     }
 
     private var filteredHistoryItems: [iOSSpeechQueueItem] {
         guard !normalizedSearch.isEmpty else { return historyItems }
-        return historyItems.filter {
-            $0.text.localizedCaseInsensitiveContains(normalizedSearch)
-        }
+        return historyItems.filter { matchesSearch($0.text) }
+    }
+
+    private func matchesSearch(_ text: String) -> Bool {
+        let query = normalizedSearch
+        guard !query.isEmpty else { return true }
+        let tokens = query
+            .folding(options: .diacriticInsensitive, locale: .current)
+            .lowercased()
+            .components(separatedBy: .whitespacesAndNewlines)
+            .filter { !$0.isEmpty }
+        guard !tokens.isEmpty else { return true }
+        let haystack = text
+            .folding(options: .diacriticInsensitive, locale: .current)
+            .lowercased()
+        return tokens.allSatisfy { haystack.contains($0) }
     }
 
     private func phraseButton(text: String, action: @escaping () -> Void) -> some View {
