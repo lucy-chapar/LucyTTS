@@ -88,26 +88,52 @@ struct iOSSettingsView: View {
 
     @ViewBuilder
     private var voiceSection: some View {
-        Section("Voices") {
+        Section {
             Picker("Selected voice", selection: selectedVoiceBinding) {
                 ForEach(settingsStore.voicePresets) { preset in
                     Text(preset.displayName).tag(preset.id.uuidString)
                 }
             }
-            Button("Add voice") {
+            NavigationLink {
+                FishVoiceBrowserView(
+                    savedReferenceIDs: Set(settingsStore.voicePresets.map { $0.referenceID }),
+                    apiKeyProvider: { try settingsStore.currentAPIKey() },
+                    onSave: { model in settingsStore.saveFishVoiceModel(model) },
+                    onUse: { model in settingsStore.useFishVoiceModel(model) }
+                )
+            } label: {
+                Label("Browse Fish voices", systemImage: "magnifyingglass")
+            }
+            .disabled(!settingsStore.hasUsableAPIKey)
+        } header: {
+            Text("Voice")
+        } footer: {
+            if !settingsStore.hasUsableAPIKey {
+                Text("Save a Fish Audio API key above to browse voices.")
+            }
+        }
+
+        Section("Advanced") {
+            Button {
                 hideKeyboard()
                 _ = settingsStore.addVoicePreset()
+            } label: {
+                Label("Add voice by reference ID", systemImage: "plus")
             }
-            Button(loadingVoices ? "Loading..." : "Import my Fish voices") {
+            Button {
                 hideKeyboard()
                 importFishVoices()
+            } label: {
+                Label(loadingVoices ? "Refreshing…" : "Refresh my Fish voices", systemImage: "arrow.clockwise")
             }
-            .disabled(loadingVoices)
-            Button(loadingVoices ? "Loading..." : "Fetch Fish names") {
+            .disabled(loadingVoices || !settingsStore.hasUsableAPIKey)
+            Button {
                 hideKeyboard()
                 fetchFishNames()
+            } label: {
+                Label(loadingVoices ? "Refreshing…" : "Refresh voice names", systemImage: "text.badge.checkmark")
             }
-            .disabled(loadingVoices)
+            .disabled(loadingVoices || !settingsStore.hasUsableAPIKey)
             if let voiceFetchMessage {
                 Text(voiceFetchMessage)
                     .font(.caption)

@@ -104,23 +104,54 @@ final class FishAudioClient {
     }
 
     func listMyVoiceModels(apiKey: String) async throws -> [FishVoiceModel] {
+        let page = try await listVoiceModels(
+            apiKey: apiKey,
+            selfOnly: true,
+            pageNumber: 1,
+            pageSize: 100
+        )
+        return page.items
+    }
+
+    func listVoiceModels(
+        apiKey: String,
+        selfOnly: Bool = false,
+        pageNumber: Int = 1,
+        pageSize: Int = 30,
+        title: String? = nil,
+        language: String? = nil,
+        tag: String? = nil,
+        sortBy: FishVoiceSort = .score
+    ) async throws -> FishVoiceListPage {
         let trimmedKey = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedKey.isEmpty else { throw FishAudioError.missingAPIKey }
         guard let modelEndpoint else { throw FishAudioError.invalidURL }
 
         var components = URLComponents(url: modelEndpoint, resolvingAgainstBaseURL: false)
-        components?.queryItems = [
-            URLQueryItem(name: "self", value: "true"),
-            URLQueryItem(name: "page_size", value: "100"),
-            URLQueryItem(name: "page_number", value: "1")
+        var queryItems: [URLQueryItem] = [
+            URLQueryItem(name: "self", value: selfOnly ? "true" : "false"),
+            URLQueryItem(name: "page_size", value: String(max(1, pageSize))),
+            URLQueryItem(name: "page_number", value: String(max(1, pageNumber))),
+            URLQueryItem(name: "sort_by", value: sortBy.rawValue)
         ]
+        if let title = title?.trimmingCharacters(in: .whitespacesAndNewlines), !title.isEmpty {
+            queryItems.append(URLQueryItem(name: "title", value: title))
+        }
+        if let language = language?.trimmingCharacters(in: .whitespacesAndNewlines), !language.isEmpty {
+            queryItems.append(URLQueryItem(name: "language", value: language))
+        }
+        if let tag = tag?.trimmingCharacters(in: .whitespacesAndNewlines), !tag.isEmpty {
+            queryItems.append(URLQueryItem(name: "tag", value: tag))
+        }
+        components?.queryItems = queryItems
         guard let url = components?.url else { throw FishAudioError.invalidURL }
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(trimmedKey)", forHTTPHeaderField: "Authorization")
         let data = try await jsonData(for: request)
-        return try JSONDecoder().decode(FishVoiceModelListResponse.self, from: data).items
+        let response = try JSONDecoder().decode(FishVoiceModelListResponse.self, from: data)
+        return FishVoiceListPage(items: response.items, total: response.total, hasMore: response.hasMore)
     }
 
     private func jsonData(for request: URLRequest) async throws -> Data {
@@ -164,14 +195,81 @@ struct FishVoiceModel: Decodable, Identifiable, Equatable {
     let id: String
     let title: String
     let description: String?
+    let tags: [String]?
+    let languages: [String]?
+    let samples: [FishVoiceSample]?
+    let author: FishVoiceAuthor?
+    let taskCount: Int?
+    let likeCount: Int?
+    let coverImage: String?
+    let visibility: String?
+
+    var authorName: String? {
+        let trimmed = author?.nickname?.trimmingCharacters(in: .whitespacesAndNewlines)
+        return (trimmed?.isEmpty ?? true) ? nil : trimmed
+    }
 
     enum CodingKeys: String, CodingKey {
         case id = "_id"
         case title
         case description
+        case tags
+        case languages
+        case samples
+        case author
+        case taskCount = "task_count"
+        case likeCount = "like_count"
+        case coverImage = "cover_image"
+        case visibility
+    }
+}
+
+struct FishVoiceSample: Decodable, Equatable, Hashable {
+    let title: String?
+    let text: String?
+    let audio: URL
+}
+
+struct FishVoiceAuthor: Decodable, Equatable {
+    let id: String?
+    let nickname: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id = "_id"
+        case nickname
+    }
+}
+
+struct FishVoiceListPage: Equatable {
+    let items: [FishVoiceModel]
+    let total: Int?
+    let hasMore: Bool?
+}
+
+enum FishVoiceSort: String, CaseIterable, Identifiable {
+    case score
+    case taskCount = "task_count"
+    case createdAt = "created_at"
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .score: return "Popularity"
+        case .taskCount: return "Most used"
+        case .createdAt: return "Newest"
+        }
     }
 }
 
 private struct FishVoiceModelListResponse: Decodable {
     let items: [FishVoiceModel]
+    let total: Int?
+    let hasMore: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case items
+        case total
+        case hasMore = "has_more"
+    }
 }
