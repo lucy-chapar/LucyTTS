@@ -17,7 +17,11 @@ struct iOSSettingsView: View {
                 voiceSection
                 tuningSection
             }
+            .scrollContentBackground(.hidden)
+            .background(LucyTheme.background)
             .navigationTitle("Settings")
+            .toolbarBackground(LucyTheme.blush.opacity(0.82), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {

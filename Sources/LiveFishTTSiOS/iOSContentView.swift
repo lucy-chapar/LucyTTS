@@ -15,7 +15,10 @@ struct iOSContentView: View {
                     setupView
                 }
             }
-            .navigationTitle("Live Fish TTS")
+            .navigationTitle("Lucy TTS")
+            .toolbarBackground(LucyTheme.blush.opacity(0.82), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Settings") {
@@ -37,13 +40,18 @@ struct iOSContentView: View {
     }
 
     private var mainInterface: some View {
-        VStack(spacing: 12) {
+        ZStack {
+            LucyTheme.background
+                .ignoresSafeArea()
+
+            VStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Voice: \(settingsStore.activeVoiceName)")
                     .font(.subheadline.weight(.medium))
+                    .foregroundStyle(LucyTheme.plum)
                 Text("\(speechQueue.status.label) · \(speechQueue.queuedCount) queued")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(LucyTheme.plum.opacity(0.72))
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -51,18 +59,25 @@ struct iOSContentView: View {
                 .font(.title3)
                 .frame(minHeight: 220)
                 .padding(8)
-                .background(Color(.secondarySystemBackground))
+                .background(LucyTheme.cream)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(LucyTheme.plum.opacity(0.52), lineWidth: 2)
+                )
 
             HStack {
                 Button("Speak", action: submit)
                     .buttonStyle(.borderedProminent)
+                    .tint(LucyTheme.hotPink)
                 Button("Stop current") {
                     speechQueue.stopCurrent()
                 }
+                .tint(LucyTheme.plum)
                 Button("Clear queue") {
                     speechQueue.clearQueue()
                 }
+                .tint(LucyTheme.plum)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -79,10 +94,11 @@ struct iOSContentView: View {
                         HStack {
                             Text(item.text)
                                 .lineLimit(2)
+                                .foregroundStyle(LucyTheme.plum)
                             Spacer()
                             Text(item.state.rawValue)
                                 .font(.caption)
-                                .foregroundStyle(item.state == .error ? .red : .secondary)
+                                .foregroundStyle(item.state == .error ? .red : LucyTheme.plum.opacity(0.68))
                         }
                         if let error = item.errorMessage {
                             Text(error)
@@ -96,26 +112,37 @@ struct iOSContentView: View {
                             .font(.caption)
                         }
                     }
+                    .listRowBackground(LucyTheme.cream.opacity(0.82))
                 }
             }
             .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+            .padding()
         }
-        .padding()
     }
 
     private var setupView: some View {
-        VStack(spacing: 14) {
+        ZStack {
+            LucyTheme.background
+                .ignoresSafeArea()
+
+            VStack(spacing: 14) {
             Text("Fish Audio API key required")
                 .font(.title2.bold())
+                .foregroundStyle(LucyTheme.plum)
             Text("Save your key once. It stays in iOS Keychain.")
-                .foregroundStyle(.secondary)
+                .foregroundStyle(LucyTheme.plum.opacity(0.72))
                 .multilineTextAlignment(.center)
             Button("Open API Key Setup") {
                 showSettings = true
             }
             .buttonStyle(.borderedProminent)
+            .tint(LucyTheme.hotPink)
+            }
+            .padding()
         }
-        .padding()
     }
 
     private func submit() {

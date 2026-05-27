@@ -10,6 +10,7 @@ struct LiveFishTTSiOSApp: App {
             iOSContentView()
                 .environmentObject(settingsStore)
                 .environmentObject(speechQueue)
+                .tint(LucyTheme.hotPink)
                 .task {
                     speechQueue.configure(
                         settingsStore: settingsStore,

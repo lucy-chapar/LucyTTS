@@ -15,6 +15,18 @@ struct iOSSubmitTextView: UIViewRepresentable {
         textView.font = .preferredFont(forTextStyle: .title3)
         textView.adjustsFontForContentSizeCategory = true
         textView.backgroundColor = .clear
+        textView.textColor = UIColor(
+            red: 0.13,
+            green: 0.05,
+            blue: 0.16,
+            alpha: 1.0
+        )
+        textView.tintColor = UIColor(
+            red: 0.95,
+            green: 0.26,
+            blue: 0.58,
+            alpha: 1.0
+        )
         textView.textContainerInset = UIEdgeInsets(top: 12, left: 10, bottom: 12, right: 10)
         textView.returnKeyType = .send
         textView.enablesReturnKeyAutomatically = true

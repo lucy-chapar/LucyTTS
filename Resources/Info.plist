@@ -7,9 +7,11 @@
     <key>CFBundleIdentifier</key>
     <string>local.livefishtts.app</string>
     <key>CFBundleName</key>
-    <string>LiveFishTTS</string>
+    <string>Lucy TTS</string>
     <key>CFBundleDisplayName</key>
-    <string>LiveFishTTS</string>
+    <string>Lucy TTS</string>
+    <key>CFBundleIconFile</key>
+    <string>LucyTTS</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
