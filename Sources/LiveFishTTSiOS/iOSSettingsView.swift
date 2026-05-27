@@ -98,6 +98,17 @@ struct iOSSettingsView: View {
                 hideKeyboard()
                 _ = settingsStore.addVoicePreset()
             }
+            NavigationLink {
+                FishVoiceBrowserView(
+                    savedReferenceIDs: Set(settingsStore.voicePresets.map { $0.referenceID }),
+                    apiKeyProvider: { try settingsStore.currentAPIKey() },
+                    onSave: { model in settingsStore.saveFishVoiceModel(model) },
+                    onUse: { model in settingsStore.useFishVoiceModel(model) }
+                )
+            } label: {
+                Text("Browse Fish voices")
+            }
+            .disabled(!settingsStore.hasUsableAPIKey)
             Button(loadingVoices ? "Loading..." : "Import my Fish voices") {
                 hideKeyboard()
                 importFishVoices()

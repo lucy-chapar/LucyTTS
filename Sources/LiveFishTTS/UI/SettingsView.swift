@@ -11,6 +11,7 @@ struct SettingsView: View {
     @State private var testingKey = false
     @State private var loadingVoices = false
     @State private var voiceFetchMessage: String?
+    @State private var showVoiceBrowser = false
 
     var body: some View {
         ScrollView {
@@ -24,6 +25,15 @@ struct SettingsView: View {
             .padding()
         }
         .frame(width: 720, height: 700)
+        .sheet(isPresented: $showVoiceBrowser) {
+            FishVoiceBrowserView(
+                savedReferenceIDs: Set(settingsStore.voicePresets.map { $0.referenceID }),
+                apiKeyProvider: { try settingsStore.currentAPIKey() },
+                onSave: { model in settingsStore.saveFishVoiceModel(model) },
+                onUse: { model in settingsStore.useFishVoiceModel(model) }
+            )
+            .frame(minWidth: 640, minHeight: 560)
+        }
         .onChange(of: settingsStore.referenceID) { _ in settingsStore.saveSettings() }
         .onChange(of: settingsStore.voicePresets) { _ in settingsStore.saveSettings() }
         .onChange(of: settingsStore.selectedVoicePresetID) { _ in settingsStore.saveSettings() }
@@ -99,6 +109,10 @@ struct SettingsView: View {
                     Button("Add voice") {
                         _ = settingsStore.addVoicePreset()
                     }
+                    Button("Browse Fish voices…") {
+                        showVoiceBrowser = true
+                    }
+                    .disabled(!settingsStore.hasUsableAPIKey)
                     Button(loadingVoices ? "Loading..." : "Import my Fish voices") {
                         importFishVoices()
                     }

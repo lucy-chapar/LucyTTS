@@ -21,6 +21,8 @@
 		100000000000000000000012 /* iOSLucyTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000013 /* iOSLucyTheme.swift */; };
 		100000000000000000000013 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000014 /* Assets.xcassets */; };
 		100000000000000000000014 /* PhrasePresetCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000015 /* PhrasePresetCatalog.swift */; };
+		100000000000000000000015 /* VoiceSamplePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000016 /* VoiceSamplePlayer.swift */; };
+		100000000000000000000016 /* FishVoiceBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000017 /* FishVoiceBrowserView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +41,8 @@
 		200000000000000000000013 /* iOSLucyTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTSiOS/iOSLucyTheme.swift; sourceTree = "<group>"; };
 		200000000000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/LiveFishTTSiOS/Assets.xcassets; sourceTree = "<group>"; };
 		200000000000000000000015 /* PhrasePresetCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTS/Phrases/PhrasePresetCatalog.swift; sourceTree = "<group>"; };
+		200000000000000000000016 /* VoiceSamplePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTS/API/VoiceSamplePlayer.swift; sourceTree = "<group>"; };
+		200000000000000000000017 /* FishVoiceBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTS/UI/FishVoiceBrowserView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +73,8 @@
 				200000000000000000000003 /* KeychainService.swift */,
 				200000000000000000000004 /* VoicePreset.swift */,
 				200000000000000000000015 /* PhrasePresetCatalog.swift */,
+				200000000000000000000016 /* VoiceSamplePlayer.swift */,
+				200000000000000000000017 /* FishVoiceBrowserView.swift */,
 			);
 			name = Shared;
 			sourceTree = "<group>";
@@ -180,6 +186,8 @@
 				100000000000000000000010 /* iOSSettingsView.swift in Sources */,
 				100000000000000000000012 /* iOSLucyTheme.swift in Sources */,
 				100000000000000000000014 /* PhrasePresetCatalog.swift in Sources */,
+				100000000000000000000015 /* VoiceSamplePlayer.swift in Sources */,
+				100000000000000000000016 /* FishVoiceBrowserView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

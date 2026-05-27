@@ -208,6 +208,48 @@ final class iOSSettingsStore: ObservableObject {
         saveSettings()
     }
 
+    @discardableResult
+    func saveFishVoiceModel(_ model: FishVoiceModel) -> UUID {
+        let referenceID = model.id.trimmingCharacters(in: .whitespacesAndNewlines)
+        let notes = Self.notesString(for: model)
+        var updatedPresets = voicePresets
+        let savedID: UUID
+        if let index = updatedPresets.firstIndex(where: { $0.referenceID == referenceID }) {
+            savedID = updatedPresets[index].id
+            updatedPresets[index].name = model.title
+            if !notes.isEmpty {
+                updatedPresets[index].notes = notes
+            }
+        } else {
+            let preset = VoicePreset(name: model.title, referenceID: referenceID, notes: notes)
+            savedID = preset.id
+            updatedPresets.append(preset)
+        }
+        voicePresets = updatedPresets
+        normalizeSelectedVoice()
+        saveSettings()
+        return savedID
+    }
+
+    func useFishVoiceModel(_ model: FishVoiceModel) {
+        let id = saveFishVoiceModel(model)
+        useVoicePreset(id: id)
+    }
+
+    fileprivate static func notesString(for model: FishVoiceModel) -> String {
+        var parts: [String] = []
+        if let description = model.description?.trimmingCharacters(in: .whitespacesAndNewlines), !description.isEmpty {
+            parts.append(description)
+        }
+        if let tags = model.tags, !tags.isEmpty {
+            parts.append("Tags: " + tags.joined(separator: ", "))
+        }
+        if let languages = model.languages, !languages.isEmpty {
+            parts.append("Languages: " + languages.joined(separator: ", "))
+        }
+        return parts.joined(separator: "\n\n")
+    }
+
     static func mask(_ key: String) -> String {
         let suffix = key.suffix(3)
         return String(repeating: "*", count: max(8, min(12, key.count))) + suffix
