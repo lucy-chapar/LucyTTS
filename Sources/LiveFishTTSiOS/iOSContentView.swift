@@ -17,16 +17,8 @@ struct iOSContentView: View {
                     setupView
                 }
             }
-            .navigationTitle("Lucy TTS")
-            .toolbarBackground(LucyTheme.blush.opacity(0.82), for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarColorScheme(.light, for: .navigationBar)
+            .toolbar(.hidden, for: .navigationBar)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Settings") {
-                        showSettings = true
-                    }
-                }
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
                     Button("Speak") {
@@ -60,20 +52,44 @@ struct iOSContentView: View {
 
     private var mainContent: some View {
         VStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Voice: \(settingsStore.activeVoiceName)")
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(LucyTheme.plum)
-                Text("\(speechQueue.status.label) · \(speechQueue.queuedCount) queued")
-                    .font(.caption)
-                    .foregroundStyle(LucyTheme.plum.opacity(0.72))
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
+            header
             captionView
             historyList
         }
         .padding([.horizontal, .top])
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    }
+
+    private var header: some View {
+        HStack(alignment: .center, spacing: 12) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Lucy TTS")
+                    .font(.title2.bold())
+                    .foregroundStyle(.black)
+                Text("Voice: \(settingsStore.activeVoiceName) · \(speechQueue.status.label) · \(speechQueue.queuedCount) queued")
+                    .font(.subheadline)
+                    .foregroundStyle(LucyTheme.plum.opacity(0.82))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+
+            Spacer()
+
+            Button("Settings") {
+                showSettings = true
+            }
+            .font(.callout.weight(.semibold))
+            .foregroundStyle(LucyTheme.hotPink)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 9)
+            .background(LucyTheme.cream.opacity(0.68))
+            .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(.white.opacity(0.86), lineWidth: 1)
+            )
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var composerPanel: some View {
@@ -195,37 +211,56 @@ struct iOSContentView: View {
     }
 
     private var historyList: some View {
-        List {
-            ForEach(speechQueue.items) { item in
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text(item.text)
-                            .lineLimit(2)
-                            .foregroundStyle(LucyTheme.plum)
-                        Spacer()
-                        Text(item.state.rawValue)
-                            .font(.caption)
-                            .foregroundStyle(item.state == .error ? .red : LucyTheme.plum.opacity(0.68))
-                    }
-                    if let error = item.errorMessage {
-                        Text(error)
-                            .font(.caption)
-                            .foregroundStyle(.red)
-                    }
-                    if item.state == .queued {
-                        Button("Remove") {
-                            speechQueue.removeQueuedItem(item)
-                        }
-                        .font(.caption)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 8) {
+                    ForEach(speechQueue.items) { item in
+                        historyRow(for: item)
+                            .id(item.id)
                     }
                 }
-                .listRowBackground(LucyTheme.cream.opacity(0.82))
+                .padding(.vertical, 2)
+            }
+            .onChange(of: speechQueue.items.last?.id) { id in
+                guard let id else { return }
+                withAnimation(.easeOut(duration: 0.18)) {
+                    proxy.scrollTo(id, anchor: .bottom)
+                }
             }
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .frame(minHeight: 120)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func historyRow(for item: iOSSpeechQueueItem) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(item.text)
+                    .font(.body)
+                    .lineLimit(3)
+                    .foregroundStyle(LucyTheme.plum)
+                Spacer(minLength: 10)
+                Text(item.state.rawValue)
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(item.state == .error ? .red : LucyTheme.plum.opacity(0.68))
+            }
+            if let error = item.errorMessage {
+                Text(error)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+            }
+            if item.state == .queued {
+                Button("Remove") {
+                    speechQueue.removeQueuedItem(item)
+                }
+                .font(.caption)
+                .tint(LucyTheme.plum)
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(LucyTheme.cream.opacity(0.72))
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 
     private var emoteOverlay: some View {
