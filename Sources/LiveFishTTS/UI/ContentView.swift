@@ -6,6 +6,8 @@ struct ContentView: View {
     @EnvironmentObject private var speechQueue: SpeechQueueManager
     @State private var draftText = ""
     @State private var showSettings = false
+    @State private var showEmotePicker = false
+    @State private var pendingTextInsertion: String?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -68,6 +70,7 @@ struct ContentView: View {
                 checkSpelling: settingsStore.checkSpelling,
                 autoCorrectSpelling: settingsStore.autoCorrectSpelling,
                 checkGrammar: settingsStore.checkGrammar,
+                pendingInsertion: $pendingTextInsertion,
                 onSubmit: submit
             )
             .background(LucyTheme.cream)
@@ -91,6 +94,18 @@ struct ContentView: View {
                     speechQueue.clearQueue()
                 }
                 .tint(LucyTheme.plum)
+                EmoteButton {
+                    showEmotePicker = true
+                }
+                .popover(isPresented: $showEmotePicker, arrowEdge: .bottom) {
+                    EmotePicker(
+                        onClose: {
+                            showEmotePicker = false
+                        },
+                        onSelect: insertEmote
+                    )
+                    .frame(width: 430)
+                }
                 Spacer()
                 if let error = speechQueue.lastError {
                     Text(error)
@@ -145,6 +160,85 @@ struct ContentView: View {
         guard !captured.isEmpty else { return }
         speechQueue.enqueue(captured)
         draftText = ""
+    }
+
+    private func insertEmote(_ tag: String) {
+        pendingTextInsertion = "\(tag) "
+        showEmotePicker = false
+    }
+}
+
+private let fishEmoteTags = [
+    "[laughing]",
+    "[chuckling]",
+    "[moaning]",
+    "[clear throat]",
+    "[sobbing]",
+    "[crying loudly]",
+    "[sighing]",
+    "[panting]",
+    "[groaning]",
+    "[crowd laughing]",
+    "[background laughter]",
+    "[audience laughing]",
+    "[pause]",
+    "[long pause]"
+]
+
+private struct EmoteButton: View {
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text("Emote")
+                .font(.body.weight(.semibold))
+                .foregroundStyle(.white)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 7)
+                .background(
+                    LinearGradient(
+                        colors: [.red, .orange, .yellow, .green, .blue, .purple],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct EmotePicker: View {
+    var onClose: () -> Void
+    var onSelect: (String) -> Void
+
+    private let columns = [
+        GridItem(.adaptive(minimum: 126), spacing: 8)
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Emote")
+                    .font(.headline)
+                    .foregroundStyle(LucyTheme.plum)
+                Spacer()
+                Button("Close", action: onClose)
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(LucyTheme.plum)
+            }
+            LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
+                ForEach(fishEmoteTags, id: \.self) { tag in
+                    Button(tag) {
+                        onSelect(tag)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(LucyTheme.hotPink)
+                }
+            }
+        }
+        .padding(14)
+        .background(LucyTheme.background)
     }
 }
 

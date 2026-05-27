@@ -7,6 +7,7 @@ struct SubmitTextView: NSViewRepresentable {
     var checkSpelling: Bool
     var autoCorrectSpelling: Bool
     var checkGrammar: Bool
+    @Binding var pendingInsertion: String?
     var onSubmit: () -> Void
 
     func makeCoordinator() -> Coordinator {
@@ -41,12 +42,24 @@ struct SubmitTextView: NSViewRepresentable {
         if textView.string != text {
             textView.string = text
         }
+        if let insertion = pendingInsertion {
+            insert(insertion, into: textView)
+            DispatchQueue.main.async {
+                pendingInsertion = nil
+            }
+        }
         applyTypingAssistance(to: textView)
         DispatchQueue.main.async {
             if textView.window?.isKeyWindow == true {
                 textView.window?.makeFirstResponder(textView)
             }
         }
+    }
+
+    private func insert(_ insertion: String, into textView: NSTextView) {
+        let selectedRange = textView.selectedRange()
+        textView.insertText(insertion, replacementRange: selectedRange)
+        text = textView.string
     }
 
     private func applyTypingAssistance(to textView: NSTextView) {

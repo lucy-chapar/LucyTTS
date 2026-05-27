@@ -3,6 +3,7 @@ import UIKit
 
 struct iOSSubmitTextView: UIViewRepresentable {
     @Binding var text: String
+    @Binding var pendingInsertion: String?
     var onSubmit: () -> Void
 
     func makeCoordinator() -> Coordinator {
@@ -47,12 +48,28 @@ struct iOSSubmitTextView: UIViewRepresentable {
         if textView.text != text {
             textView.text = text
         }
+        if let insertion = pendingInsertion {
+            insert(insertion, into: textView)
+            DispatchQueue.main.async {
+                pendingInsertion = nil
+            }
+        }
 
         DispatchQueue.main.async {
             if textView.window != nil, !textView.isFirstResponder {
                 textView.becomeFirstResponder()
             }
         }
+    }
+
+    private func insert(_ insertion: String, into textView: UITextView) {
+        if let selectedRange = textView.selectedTextRange {
+            textView.replace(selectedRange, withText: insertion)
+        } else {
+            textView.text.append(insertion)
+            textView.selectedRange = NSRange(location: textView.text.count, length: 0)
+        }
+        text = textView.text
     }
 
     final class Coordinator: NSObject, UITextViewDelegate {
