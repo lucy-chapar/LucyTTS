@@ -4,9 +4,11 @@ struct ContentView: View {
     @EnvironmentObject private var settingsStore: SettingsStore
     @EnvironmentObject private var audioOutput: AudioOutputService
     @EnvironmentObject private var speechQueue: SpeechQueueManager
+    @StateObject private var phrasePresetStore = PhrasePresetStore()
     @State private var draftText = ""
     @State private var showSettings = false
     @State private var showEmotePicker = false
+    @State private var showPhraseCatalog = false
     @State private var pendingTextInsertion: SubmitTextView.PendingInsertion?
 
     var body: some View {
@@ -101,6 +103,21 @@ struct ContentView: View {
                     speechQueue.clearQueue()
                 }
                 .tint(LucyTheme.plum)
+                Button("Phrases") {
+                    showPhraseCatalog = true
+                }
+                .tint(LucyTheme.plum)
+                .popover(isPresented: $showPhraseCatalog, arrowEdge: .bottom) {
+                    PhraseCatalogPopover(
+                        catalog: phrasePresetStore.catalog,
+                        items: speechQueue.items,
+                        onClose: {
+                            showPhraseCatalog = false
+                        },
+                        onSelectPhrase: insertPhrase
+                    )
+                    .frame(width: 520, height: 560)
+                }
                 EmoteButton {
                     showEmotePicker = true
                 }
@@ -190,6 +207,11 @@ struct ContentView: View {
         pendingTextInsertion = SubmitTextView.PendingInsertion(text: "\(tag) ")
         showEmotePicker = false
     }
+
+    private func insertPhrase(_ phrase: String) {
+        pendingTextInsertion = SubmitTextView.PendingInsertion(text: phrase)
+        showPhraseCatalog = false
+    }
 }
 
 private let fishEmoteTags = [
@@ -263,6 +285,174 @@ private struct EmotePicker: View {
         }
         .padding(14)
         .background(LucyTheme.background)
+    }
+}
+
+private struct PhraseCatalogPopover: View {
+    let catalog: PhrasePresetCatalog
+    let items: [SpeechQueueItem]
+    var onClose: () -> Void
+    var onSelectPhrase: (String) -> Void
+
+    @State private var selectedCategoryID = PhrasePresetCatalog.defaultCatalog.categories.first?.id ?? ""
+    @State private var searchText = ""
+
+    private var selectedCategory: PhrasePresetCategory? {
+        catalog.categories.first { $0.id == selectedCategoryID } ?? catalog.categories.first
+    }
+
+    private var normalizedSearch: String {
+        searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var historyItems: [SpeechQueueItem] {
+        Array(items.reversed())
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Phrases")
+                    .font(.headline)
+                    .foregroundStyle(LucyTheme.plum)
+                Spacer()
+                Button("Close", action: onClose)
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(LucyTheme.plum)
+            }
+
+            TextField("Search phrases", text: $searchText)
+                .textFieldStyle(.roundedBorder)
+
+            categoryChips
+            catalogBody
+        }
+        .padding(14)
+        .background(LucyTheme.background)
+    }
+
+    private var categoryChips: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(catalog.categories) { category in
+                    categoryChip(title: category.name, isSelected: category.id == selectedCategoryID) {
+                        selectedCategoryID = category.id
+                    }
+                }
+                categoryChip(title: "History", isSelected: selectedCategoryID == "history") {
+                    selectedCategoryID = "history"
+                }
+            }
+            .padding(.vertical, 2)
+        }
+    }
+
+    private func categoryChip(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(isSelected ? LucyTheme.cream : LucyTheme.plum)
+                .lineLimit(1)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
+                .background(isSelected ? LucyTheme.plum : LucyTheme.cream.opacity(0.72))
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var catalogBody: some View {
+        if selectedCategoryID == "history" {
+            historyContent
+        } else if let selectedCategory {
+            phraseContent(for: selectedCategory)
+        } else {
+            emptyState("No phrases yet.")
+        }
+    }
+
+    private func phraseContent(for category: PhrasePresetCategory) -> some View {
+        ScrollView {
+            LazyVStack(spacing: 8) {
+                let phrases = filteredPhrases(in: category)
+                if phrases.isEmpty {
+                    emptyState("No phrases yet.")
+                } else {
+                    ForEach(phrases) { phrase in
+                        phraseButton(text: phrase.text) {
+                            onSelectPhrase(phrase.text)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private var historyContent: some View {
+        ScrollView {
+            LazyVStack(spacing: 8) {
+                let history = filteredHistoryItems
+                if history.isEmpty {
+                    emptyState("No history yet.")
+                } else {
+                    ForEach(history) { item in
+                        Button {
+                            onSelectPhrase(item.text)
+                        } label: {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(item.text)
+                                    .font(.body.weight(.semibold))
+                                    .lineLimit(3)
+                                Text(item.state.rawValue)
+                                    .font(.caption)
+                                    .foregroundStyle(item.state == .error ? .red : .secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(10)
+                            .background(LucyTheme.cream.opacity(0.72))
+                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+    }
+
+    private func filteredPhrases(in category: PhrasePresetCategory) -> [PhrasePreset] {
+        guard !normalizedSearch.isEmpty else { return category.phrases }
+        return category.phrases.filter {
+            $0.text.localizedCaseInsensitiveContains(normalizedSearch)
+        }
+    }
+
+    private var filteredHistoryItems: [SpeechQueueItem] {
+        guard !normalizedSearch.isEmpty else { return historyItems }
+        return historyItems.filter {
+            $0.text.localizedCaseInsensitiveContains(normalizedSearch)
+        }
+    }
+
+    private func phraseButton(text: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(text)
+                .font(.body.weight(.semibold))
+                .foregroundStyle(LucyTheme.plum)
+                .multilineTextAlignment(.leading)
+                .lineLimit(4)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(10)
+                .background(LucyTheme.cream.opacity(0.72))
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func emptyState(_ text: String) -> some View {
+        Text(text)
+            .foregroundStyle(LucyTheme.plum.opacity(0.62))
+            .frame(maxWidth: .infinity, minHeight: 160)
     }
 }
 

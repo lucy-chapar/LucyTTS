@@ -3,6 +3,7 @@ import SwiftUI
 struct iOSContentView: View {
     @EnvironmentObject private var settingsStore: iOSSettingsStore
     @EnvironmentObject private var speechQueue: iOSSpeechQueueManager
+    @StateObject private var phrasePresetStore = PhrasePresetStore()
     @State private var draftText = ""
     @State private var draftSelection = NSRange(location: 0, length: 0)
     @State private var draftEditorHeight: CGFloat = 76
@@ -36,6 +37,7 @@ struct iOSContentView: View {
         }
         .sheet(isPresented: $showPhraseCatalog) {
             iOSPhraseCatalogView(
+                catalog: phrasePresetStore.catalog,
                 items: speechQueue.items,
                 onClose: {
                     showPhraseCatalog = false
@@ -307,48 +309,6 @@ private let fishEmoteTags = [
     "[long pause]"
 ]
 
-private struct PhraseCatalogTab: Identifiable, Equatable {
-    let id = UUID()
-    var name: String
-    var phrases: [PhraseCatalogPhrase]
-}
-
-private struct PhraseCatalogPhrase: Identifiable, Equatable {
-    let id = UUID()
-    var title: String
-    var text: String
-}
-
-private let starterPhraseCatalogTabs = [
-    PhraseCatalogTab(
-        name: "Quick",
-        phrases: [
-            PhraseCatalogPhrase(title: "One sec", text: "One sec."),
-            PhraseCatalogPhrase(title: "Typing", text: "I'm typing."),
-            PhraseCatalogPhrase(title: "Repeat", text: "Could you repeat that?"),
-            PhraseCatalogPhrase(title: "Thank you", text: "Thank you.")
-        ]
-    ),
-    PhraseCatalogTab(
-        name: "Care",
-        phrases: [
-            PhraseCatalogPhrase(title: "Water", text: "Could I have some water?"),
-            PhraseCatalogPhrase(title: "Break", text: "I need a short break."),
-            PhraseCatalogPhrase(title: "Help", text: "I need help with something."),
-            PhraseCatalogPhrase(title: "Okay", text: "I'm okay.")
-        ]
-    ),
-    PhraseCatalogTab(
-        name: "Meeting",
-        phrases: [
-            PhraseCatalogPhrase(title: "Give me a second", text: "Can you give me a second?"),
-            PhraseCatalogPhrase(title: "Question", text: "I have a question."),
-            PhraseCatalogPhrase(title: "Agree", text: "That makes sense to me."),
-            PhraseCatalogPhrase(title: "Come back", text: "Can we come back to that?")
-        ]
-    )
-]
-
 private struct CommandPillStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
 
@@ -370,18 +330,24 @@ private struct CommandPillStyle: ButtonStyle {
 }
 
 private struct iOSPhraseCatalogView: View {
+    let catalog: PhrasePresetCatalog
     let items: [iOSSpeechQueueItem]
     var onClose: () -> Void
     var onSelectPhrase: (String) -> Void
 
-    @State private var selectedTabName = starterPhraseCatalogTabs.first?.name ?? "Quick"
-
-    private var tabNames: [String] {
-        starterPhraseCatalogTabs.map(\.name) + ["History"]
-    }
+    @State private var selectedCategoryID = PhrasePresetCatalog.defaultCatalog.categories.first?.id ?? ""
+    @State private var searchText = ""
 
     private var historyItems: [iOSSpeechQueueItem] {
         Array(items.reversed())
+    }
+
+    private var selectedCategory: PhrasePresetCategory? {
+        catalog.categories.first { $0.id == selectedCategoryID } ?? catalog.categories.first
+    }
+
+    private var normalizedSearch: String {
+        searchText.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     var body: some View {
@@ -391,13 +357,8 @@ private struct iOSPhraseCatalogView: View {
                     .ignoresSafeArea()
 
                 VStack(spacing: 14) {
-                    Picker("Catalog", selection: $selectedTabName) {
-                        ForEach(tabNames, id: \.self) { name in
-                            Text(name).tag(name)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-
+                    searchField
+                    categoryChips
                     catalogBody
                 }
                 .padding()
@@ -417,21 +378,72 @@ private struct iOSPhraseCatalogView: View {
 
     @ViewBuilder
     private var catalogBody: some View {
-        if selectedTabName == "History" {
+        if selectedCategoryID == "history" {
             historyContent
-        } else if let tab = starterPhraseCatalogTabs.first(where: { $0.name == selectedTabName }) {
-            phraseContent(for: tab)
+        } else if let selectedCategory {
+            phraseContent(for: selectedCategory)
+        } else {
+            emptyState("No phrases yet.")
         }
     }
 
-    private func phraseContent(for tab: PhraseCatalogTab) -> some View {
+    private var searchField: some View {
+        TextField("Search phrases", text: $searchText)
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
+            .font(.body)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(Color.white.opacity(0.44))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(LucyTheme.hotPink.opacity(0.22), lineWidth: 1)
+            )
+    }
+
+    private var categoryChips: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(catalog.categories) { category in
+                    categoryChip(
+                        title: category.name,
+                        isSelected: category.id == selectedCategoryID
+                    ) {
+                        selectedCategoryID = category.id
+                    }
+                }
+                categoryChip(title: "History", isSelected: selectedCategoryID == "history") {
+                    selectedCategoryID = "history"
+                }
+            }
+            .padding(.vertical, 2)
+        }
+    }
+
+    private func categoryChip(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(isSelected ? LucyTheme.cream : LucyTheme.plum)
+                .lineLimit(1)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(isSelected ? LucyTheme.plum : Color.white.opacity(0.42))
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func phraseContent(for category: PhrasePresetCategory) -> some View {
         ScrollView {
             LazyVStack(spacing: 10) {
-                if tab.phrases.isEmpty {
+                let phrases = filteredPhrases(in: category)
+                if phrases.isEmpty {
                     emptyState("No phrases yet.")
                 } else {
-                    ForEach(tab.phrases) { phrase in
-                        phraseRow(title: phrase.title, detail: phrase.text) {
+                    ForEach(phrases) { phrase in
+                        phraseButton(text: phrase.text) {
                             onSelectPhrase(phrase.text)
                         }
                     }
@@ -444,11 +456,12 @@ private struct iOSPhraseCatalogView: View {
     private var historyContent: some View {
         ScrollView {
             LazyVStack(spacing: 10) {
-                if historyItems.isEmpty {
+                let history = filteredHistoryItems
+                if history.isEmpty {
                     emptyState("No history yet.")
                 } else {
-                    ForEach(historyItems) { item in
-                        phraseRow(title: item.text, detail: item.state.rawValue) {
+                    ForEach(history) { item in
+                        historyRow(item) {
                             onSelectPhrase(item.text)
                         }
                     }
@@ -458,19 +471,50 @@ private struct iOSPhraseCatalogView: View {
         }
     }
 
-    private func phraseRow(title: String, detail: String, action: @escaping () -> Void) -> some View {
+    private func filteredPhrases(in category: PhrasePresetCategory) -> [PhrasePreset] {
+        guard !normalizedSearch.isEmpty else { return category.phrases }
+        return category.phrases.filter {
+            $0.text.localizedCaseInsensitiveContains(normalizedSearch)
+        }
+    }
+
+    private var filteredHistoryItems: [iOSSpeechQueueItem] {
+        guard !normalizedSearch.isEmpty else { return historyItems }
+        return historyItems.filter {
+            $0.text.localizedCaseInsensitiveContains(normalizedSearch)
+        }
+    }
+
+    private func phraseButton(text: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(text)
+                .font(.body.weight(.semibold))
+                .foregroundStyle(LucyTheme.plum)
+                .multilineTextAlignment(.leading)
+                .lineLimit(4)
+                .minimumScaleFactor(0.86)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(12)
+            .background(Color.white.opacity(0.42))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(LucyTheme.hotPink.opacity(0.2), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func historyRow(_ item: iOSSpeechQueueItem, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 4) {
-                Text(title)
+                Text(item.text)
                     .font(.body.weight(.semibold))
                     .foregroundStyle(LucyTheme.plum)
-                    .lineLimit(2)
-                if detail != title {
-                    Text(detail)
-                        .font(.caption)
-                        .foregroundStyle(LucyTheme.plum.opacity(0.62))
-                        .lineLimit(2)
-                }
+                    .lineLimit(3)
+                Text(item.state.rawValue)
+                    .font(.caption)
+                    .foregroundStyle(item.state == .error ? .red : LucyTheme.plum.opacity(0.62))
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
