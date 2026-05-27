@@ -59,11 +59,14 @@ select_xcode() {
         return 0
     fi
 
+    # Use `find` rather than a shell glob so this works whether the script is
+    # executed under bash or sourced into a zsh shell (zsh errors on unmatched
+    # globs by default; bash does not). The 2>/dev/null swallows missing dirs.
     local candidates=()
     local app
-    for app in /Applications/Xcode*.app "$HOME/Applications/Xcode"*.app; do
+    while IFS= read -r app; do
         [[ -d "$app" ]] && candidates+=("$app")
-    done
+    done < <(/usr/bin/find /Applications "$HOME/Applications" -maxdepth 1 -type d -name 'Xcode*.app' 2>/dev/null)
 
     if [[ ${#candidates[@]} -eq 0 ]] && command -v mdfind >/dev/null 2>&1; then
         while IFS= read -r app; do
