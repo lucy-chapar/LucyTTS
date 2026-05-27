@@ -100,33 +100,24 @@ struct SettingsView: View {
     private var voiceSettings: some View {
         GroupBox("Voice") {
             VStack(alignment: .leading, spacing: 10) {
-                Picker("Selected voice", selection: selectedVoiceBinding) {
-                    ForEach(settingsStore.voicePresets) { preset in
-                        Text(preset.displayName).tag(preset.id.uuidString)
+                HStack(spacing: 12) {
+                    Picker("Selected voice", selection: selectedVoiceBinding) {
+                        ForEach(settingsStore.voicePresets) { preset in
+                            Text(preset.displayName).tag(preset.id.uuidString)
+                        }
                     }
-                }
-                HStack {
-                    Button("Add voice") {
-                        _ = settingsStore.addVoicePreset()
-                    }
-                    Button("Browse Fish voices…") {
+                    Button {
                         showVoiceBrowser = true
+                    } label: {
+                        Label("Browse Fish voices…", systemImage: "magnifyingglass")
                     }
+                    .buttonStyle(.borderedProminent)
                     .disabled(!settingsStore.hasUsableAPIKey)
-                    Button(loadingVoices ? "Loading..." : "Import my Fish voices") {
-                        importFishVoices()
-                    }
-                    .disabled(loadingVoices)
-                    Button(loadingVoices ? "Loading..." : "Fetch Fish names") {
-                        fetchFishNames()
-                    }
-                    .disabled(loadingVoices)
-                    Spacer()
-                    if let voiceFetchMessage {
-                        Text(voiceFetchMessage)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
+                }
+                if !settingsStore.hasUsableAPIKey {
+                    Text("Save a Fish Audio API key above to browse voices.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
                 if let preset = settingsStore.selectedVoicePreset {
                     MacVoicePresetEditor(
@@ -138,6 +129,34 @@ struct SettingsView: View {
                         onRemove: { id in settingsStore.removeVoicePreset(id: id) }
                     )
                     .id(preset.id)
+                }
+                DisclosureGroup("Advanced") {
+                    HStack {
+                        Button {
+                            _ = settingsStore.addVoicePreset()
+                        } label: {
+                            Label("Add by reference ID", systemImage: "plus")
+                        }
+                        Button {
+                            importFishVoices()
+                        } label: {
+                            Label(loadingVoices ? "Refreshing…" : "Refresh my Fish voices", systemImage: "arrow.clockwise")
+                        }
+                        .disabled(loadingVoices || !settingsStore.hasUsableAPIKey)
+                        Button {
+                            fetchFishNames()
+                        } label: {
+                            Label(loadingVoices ? "Refreshing…" : "Refresh voice names", systemImage: "text.badge.checkmark")
+                        }
+                        .disabled(loadingVoices || !settingsStore.hasUsableAPIKey)
+                        Spacer()
+                        if let voiceFetchMessage {
+                            Text(voiceFetchMessage)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .padding(.top, 4)
                 }
                 voiceTuningSettings
             }
