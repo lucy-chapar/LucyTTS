@@ -40,6 +40,8 @@ final class iOSSpeechQueueManager: ObservableObject {
     @Published private(set) var items: [iOSSpeechQueueItem] = []
     @Published private(set) var status: iOSSpeechSystemStatus = .ready
     @Published private(set) var lastError: String?
+    @Published private(set) var currentCaptionText: String?
+    @Published private(set) var lastSpokenText: String?
 
     private weak var settingsStore: iOSSettingsStore?
     private var apiClient: FishAudioClient?
@@ -62,6 +64,11 @@ final class iOSSpeechQueueManager: ObservableObject {
         guard !text.isEmpty else { return }
         items.append(iOSSpeechQueueItem(text: text))
         startProcessingIfNeeded()
+    }
+
+    func replayLastSpoken() {
+        guard let lastSpokenText else { return }
+        enqueue(lastSpokenText)
     }
 
     func removeQueuedItem(_ item: iOSSpeechQueueItem) {
@@ -104,6 +111,7 @@ final class iOSSpeechQueueManager: ObservableObject {
                 let itemID = items[nextIndex].id
                 let itemText = items[nextIndex].text
                 let apiKey = try settingsStore.currentAPIKey()
+                currentCaptionText = itemText
                 items[nextIndex].state = .generating
                 status = .generating
                 let audio = try await apiClient.synthesize(
@@ -120,17 +128,22 @@ final class iOSSpeechQueueManager: ObservableObject {
                 if let doneIndex = items.firstIndex(where: { $0.id == itemID }) {
                     items[doneIndex].state = .done
                 }
+                lastSpokenText = itemText
+                currentCaptionText = nil
                 status = .ready
                 lastError = nil
             } catch {
                 if stoppingCurrent, (error as? iOSPlaybackError) == .stopped {
                     if let currentIndex = items.firstIndex(where: { $0.state == .playing || $0.state == .generating }) {
+                        lastSpokenText = items[currentIndex].text
                         items[currentIndex].state = .done
                     }
+                    currentCaptionText = nil
                     stoppingCurrent = false
                     status = .ready
                     continue
                 }
+                currentCaptionText = nil
                 markItem(nextIndex, error: error.localizedDescription)
             }
         }

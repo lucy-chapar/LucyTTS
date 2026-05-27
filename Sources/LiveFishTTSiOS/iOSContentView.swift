@@ -46,7 +46,20 @@ struct iOSContentView: View {
             LucyTheme.background
                 .ignoresSafeArea()
 
-            VStack(spacing: 12) {
+            mainContent
+
+            if showEmotePicker {
+                emoteOverlay
+            }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            composerPanel
+        }
+        .animation(.easeInOut(duration: 0.16), value: showEmotePicker)
+    }
+
+    private var mainContent: some View {
+        VStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Voice: \(settingsStore.activeVoiceName)")
                     .font(.subheadline.weight(.medium))
@@ -57,9 +70,17 @@ struct iOSContentView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
+            captionView
+            historyList
+        }
+        .padding([.horizontal, .top])
+    }
+
+    private var composerPanel: some View {
+        VStack(spacing: 10) {
             iOSSubmitTextView(text: $draftText, selectedRange: $draftSelection, onSubmit: submit)
                 .font(.title3)
-                .frame(minHeight: 220)
+                .frame(minHeight: 150, maxHeight: 180)
                 .padding(8)
                 .background(LucyTheme.cream)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -76,55 +97,29 @@ struct iOSContentView: View {
                     .foregroundStyle(.red)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-
-            List {
-                ForEach(speechQueue.items) { item in
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Text(item.text)
-                                .lineLimit(2)
-                                .foregroundStyle(LucyTheme.plum)
-                            Spacer()
-                            Text(item.state.rawValue)
-                                .font(.caption)
-                                .foregroundStyle(item.state == .error ? .red : LucyTheme.plum.opacity(0.68))
-                        }
-                        if let error = item.errorMessage {
-                            Text(error)
-                                .font(.caption)
-                                .foregroundStyle(.red)
-                        }
-                        if item.state == .queued {
-                            Button("Remove") {
-                                speechQueue.removeQueuedItem(item)
-                            }
-                            .font(.caption)
-                        }
-                    }
-                    .listRowBackground(LucyTheme.cream.opacity(0.82))
-                }
-            }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            }
-            .padding()
-
-            if showEmotePicker {
-                emoteOverlay
-            }
         }
-        .animation(.easeInOut(duration: 0.16), value: showEmotePicker)
+        .padding(.horizontal)
+        .padding(.top, 10)
+        .padding(.bottom, 8)
+        .background(
+            LucyTheme.background
+                .overlay(alignment: .top) {
+                    Rectangle()
+                        .fill(LucyTheme.hotPink.opacity(0.2))
+                        .frame(height: 1)
+                }
+        )
     }
 
     private var commandButtons: some View {
         HStack(spacing: 8) {
             speakButton
+            replayButton
             stopButton
             clearQueueButton
             emoteMenuButton
         }
-        .font(.callout.weight(.semibold))
+        .font(.caption.weight(.semibold))
         .controlSize(.small)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -137,6 +132,19 @@ struct iOSContentView: View {
         }
             .buttonStyle(.borderedProminent)
             .tint(LucyTheme.hotPink)
+    }
+
+    private var replayButton: some View {
+        Button {
+            speechQueue.replayLastSpoken()
+        } label: {
+            Text("Replay")
+                .lineLimit(1)
+                .minimumScaleFactor(0.78)
+        }
+        .buttonStyle(.bordered)
+        .tint(LucyTheme.plum)
+        .disabled(speechQueue.lastSpokenText == nil)
     }
 
     private var stopButton: some View {
@@ -155,7 +163,7 @@ struct iOSContentView: View {
         Button {
             speechQueue.clearQueue()
         } label: {
-            Text("Clear queue")
+            Text("Clear")
                 .lineLimit(1)
                 .minimumScaleFactor(0.82)
         }
@@ -167,6 +175,57 @@ struct iOSContentView: View {
         EmoteButton {
             showEmotePicker = true
         }
+    }
+
+    private var captionView: some View {
+        Group {
+            if let caption = speechQueue.currentCaptionText {
+                Text(caption)
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(LucyTheme.cream)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 12)
+                    .background(LucyTheme.plum.opacity(0.92))
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .transition(.opacity.combined(with: .scale(scale: 0.98)))
+            }
+        }
+    }
+
+    private var historyList: some View {
+        List {
+            ForEach(speechQueue.items) { item in
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text(item.text)
+                            .lineLimit(2)
+                            .foregroundStyle(LucyTheme.plum)
+                        Spacer()
+                        Text(item.state.rawValue)
+                            .font(.caption)
+                            .foregroundStyle(item.state == .error ? .red : LucyTheme.plum.opacity(0.68))
+                    }
+                    if let error = item.errorMessage {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
+                    if item.state == .queued {
+                        Button("Remove") {
+                            speechQueue.removeQueuedItem(item)
+                        }
+                        .font(.caption)
+                    }
+                }
+                .listRowBackground(LucyTheme.cream.opacity(0.82))
+            }
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .frame(minHeight: 120)
     }
 
     private var emoteOverlay: some View {
@@ -250,6 +309,24 @@ private let fishEmoteTags = [
     "[audience laughing]",
     "[pause]",
     "[long pause]"
+]
+
+private struct PhraseCatalogTab: Identifiable, Equatable {
+    let id = UUID()
+    var name: String
+    var phrases: [PhraseCatalogPhrase]
+}
+
+private struct PhraseCatalogPhrase: Identifiable, Equatable {
+    let id = UUID()
+    var title: String
+    var text: String
+}
+
+private let starterPhraseCatalogTabs = [
+    PhraseCatalogTab(name: "Quick", phrases: []),
+    PhraseCatalogTab(name: "Care", phrases: []),
+    PhraseCatalogTab(name: "Meeting", phrases: [])
 ]
 
 private struct EmoteButton: View {

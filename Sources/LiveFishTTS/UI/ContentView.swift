@@ -81,11 +81,18 @@ struct ContentView: View {
             )
             .frame(minHeight: 210)
 
+            captionView
+
             HStack {
                 Button("Speak", action: submit)
                     .keyboardShortcut(.return, modifiers: [])
                     .buttonStyle(.borderedProminent)
                     .tint(LucyTheme.hotPink)
+                Button("Replay") {
+                    speechQueue.replayLastSpoken()
+                }
+                .tint(LucyTheme.plum)
+                .disabled(speechQueue.lastSpokenText == nil)
                 Button("Stop") {
                     speechQueue.stopCurrent()
                 }
@@ -117,6 +124,23 @@ struct ContentView: View {
             queueList
         }
         .padding()
+    }
+
+    private var captionView: some View {
+        Group {
+            if let caption = speechQueue.currentCaptionText {
+                Text(caption)
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(LucyTheme.cream)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(LucyTheme.plum.opacity(0.92))
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .transition(.opacity.combined(with: .scale(scale: 0.98)))
+            }
+        }
     }
 
     private var queueList: some View {
