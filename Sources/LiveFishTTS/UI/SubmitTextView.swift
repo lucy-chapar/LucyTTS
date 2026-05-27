@@ -2,11 +2,22 @@ import AppKit
 import SwiftUI
 
 struct SubmitTextView: NSViewRepresentable {
+    struct PendingInsertion: Equatable, Identifiable {
+        let id: UUID
+        let text: String
+
+        init(text: String) {
+            self.id = UUID()
+            self.text = text
+        }
+    }
+
     @Binding var text: String
     var placeholder: String
     var checkSpelling: Bool
     var autoCorrectSpelling: Bool
     var checkGrammar: Bool
+    @Binding var pendingInsertion: PendingInsertion?
     var onSubmit: () -> Void
 
     func makeCoordinator() -> Coordinator {
@@ -41,12 +52,28 @@ struct SubmitTextView: NSViewRepresentable {
         if textView.string != text {
             textView.string = text
         }
+        if let insertion = pendingInsertion,
+           context.coordinator.lastAppliedInsertionID != insertion.id {
+            context.coordinator.lastAppliedInsertionID = insertion.id
+            insert(insertion.text, into: textView)
+            DispatchQueue.main.async {
+                if pendingInsertion?.id == insertion.id {
+                    pendingInsertion = nil
+                }
+            }
+        }
         applyTypingAssistance(to: textView)
         DispatchQueue.main.async {
             if textView.window?.isKeyWindow == true {
                 textView.window?.makeFirstResponder(textView)
             }
         }
+    }
+
+    private func insert(_ insertion: String, into textView: NSTextView) {
+        let selectedRange = textView.selectedRange()
+        textView.insertText(insertion, replacementRange: selectedRange)
+        text = textView.string
     }
 
     private func applyTypingAssistance(to textView: NSTextView) {
@@ -57,6 +84,7 @@ struct SubmitTextView: NSViewRepresentable {
 
     final class Coordinator: NSObject, NSTextViewDelegate {
         var parent: SubmitTextView
+        var lastAppliedInsertionID: UUID?
 
         init(_ parent: SubmitTextView) {
             self.parent = parent

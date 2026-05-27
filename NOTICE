@@ -1,0 +1,48 @@
+Lucy TTS / LiveFishTTS
+Copyright (c) 2026 Lucy Chapar and Lucy TTS contributors.
+
+This project is an accessibility-focused text-to-speech client. It is provided
+for communication support and is not medical advice.
+
+Licensing summary:
+
+- Source code is licensed under the GNU Affero General Public License v3.0 or
+  later. See LICENSE.
+- Documentation and free starter phrase content are licensed under Creative
+  Commons Attribution 4.0 International (CC BY 4.0), unless a file says
+  otherwise.
+- The names "Lucy TTS" and "LiveFishTTS", app icons, logos, and related product
+  branding are reserved project marks. See TRADEMARKS.md.
+
+Brand assets:
+
+The following files are treated as Lucy TTS branding assets and project marks:
+
+- Assets/LucyTTSIconSource.png
+- Resources/LucyTTS.icns
+- Sources/LiveFishTTSiOS/Assets.xcassets/AppIcon.appiconset/*
+
+They are included so contributors can build and inspect the official app, but
+the open-source license for the code does not grant permission to use the Lucy
+TTS marks or app icons to brand unrelated or modified products as official Lucy
+TTS releases.
+
+Third-party services:
+
+Lucy TTS can connect to Fish Audio's cloud API when the user provides their own
+Fish Audio API key and voice/model IDs. Fish Audio is a third-party service.
+Lucy TTS is not affiliated with, sponsored by, or endorsed by Fish Audio.
+Users are responsible for their own Fish Audio account, API key, usage costs,
+plan limits, voice/model rights, generated audio rights, and compliance with
+Fish Audio's current terms and policies.
+
+Lucy TTS does not bundle Fish Audio credits, public voices, cloned voices,
+celebrity-like voices, user-submitted voice models, or hosted Fish Audio API
+access.
+
+Third-party platforms and tools:
+
+Lucy TTS is built with Swift, SwiftUI, AVFoundation, Security/Keychain, and
+other Apple platform frameworks. Optional Meeting Mode documentation references
+virtual audio devices such as BlackHole and Loopback; those projects/products
+are not bundled with Lucy TTS and have their own licenses and terms.

@@ -1,12 +1,42 @@
-# LiveFishTTS
+# Lucy TTS (LiveFishTTS)
 
-LiveFishTTS is a lightweight macOS-first live text-to-speech app for fast conversation use. Type text, press Enter or click Speak, and the app immediately clears the input while it generates and plays queued speech in order.
+Lucy TTS is a lightweight macOS-first live text-to-speech app for fast conversation use. Type text, press Enter or click Speak, and the app immediately clears the input while it generates and plays queued speech in order.
 
 The v1 app is native SwiftUI for macOS. Its core pieces are split into reusable layers so a future iPhone companion can reuse the Fish Audio API client, queue model, and secure settings approach without inheriting Mac-only audio routing.
 
+Lucy TTS is accessibility-focused software. It is intended to support communication, but it is not medical advice and is provided without warranty.
+
+## License
+
+- Source code is licensed under the GNU Affero General Public License v3.0 or later. See [LICENSE](LICENSE).
+- Documentation and free starter phrase content are licensed under Creative Commons Attribution 4.0 International (CC BY 4.0), unless a file says otherwise.
+- "Lucy TTS", "LiveFishTTS", app icons, logos, and related product marks are reserved project branding. See [TRADEMARKS.md](TRADEMARKS.md).
+- Notices and third-party service notes live in [NOTICE](NOTICE).
+
+GitHub notes that public repositories need an explicit open-source license for others to freely use, change, and distribute the software. AGPLv3 is used here because Lucy TTS may later include networked sync or account components, and AGPLv3 is designed to keep modified network-service versions source-available to their users.
+
+Licensing notes in this repository are drafting guidance, not legal advice. Please have an attorney review the project before commercial launch.
+
+## Commercial Model
+
+Core accessibility-critical communication features should remain free. Communication should not be held hostage.
+
+Commercial sustainability should come from non-Fish layers, such as:
+
+- Optional tips and donations.
+- Optional hosted phrase sync/backups.
+- Curated phrase packs.
+- Workflow templates.
+- Setup and support.
+- Organizational deployment help.
+
+Lucy TTS must not be documented or designed as a Fish Audio reseller, Fish API proxy, hosted speech gateway, or bundled voice-credit provider. The app does not include Fish Audio usage, Fish credits, hosted Fish generation, managed Fish API keys, or bundled Fish voice access.
+
 ## Fish Audio API
 
-This app uses Fish Audio Text to Speech:
+Lucy TTS can use Fish Audio Text to Speech as a third-party cloud dependency. The user brings their own Fish Audio account, API key, and voice/model IDs.
+
+This app currently uses Fish Audio's documented API shape:
 
 - Endpoint: `POST https://api.fish.audio/v1/tts`
 - Auth header: `Authorization: Bearer <your_api_key>`
@@ -15,7 +45,15 @@ This app uses Fish Audio Text to Speech:
 - Default reference ID: `11a3219f88c346929ecb671d695e5a97`
 - Default output: `mp3`
 
-No real API key is stored in source code or examples.
+Fish Audio's OpenAPI document currently lists `/v1/tts`, `/v1/tts/stream/with-timestamp`, `/model`, and `/model/{id}` endpoints. The `/v1/tts` endpoint accepts `application/json` and `application/msgpack`, requires bearer authentication, recommends `s2-pro`, and documents `reference_id`, speed/volume prosody, output format, bitrate, sample rate, latency, and related generation controls.
+
+Fish Audio publishes its own pricing, rate limits, model policies, and terms. Users are responsible for their own Fish Audio account, API key, usage costs, plan limits, voice/model rights, generated audio rights, and compliance with Fish Audio's current terms. Lucy TTS does not grant commercial rights to Fish Audio voices, cloned voices, public voices, generated audio, API keys, or self-hosted models.
+
+Lucy TTS is not affiliated with, sponsored by, or endorsed by Fish Audio.
+
+No real API key is stored in source code or examples. Saved keys are stored on-device in Keychain. Do not store user Fish API keys on Lucy servers. Any future server-side API key storage, Fish proxying, hosted Fish speech generation, or bundled Fish usage is out of scope and would require written Fish Audio approval plus attorney review.
+
+Do not use Fish Audio output to train or improve a competing TTS model. Do not bundle Fish public voices, cloned voices, celebrity-like voices, or user-submitted voice models unless rights are clearly documented. Do not scrape Fish discovery pages when official API/search endpoints are available. If the app accepts Fish model URLs, it should parse the voice/model ID from the URL and store only what is needed.
 
 ## Install Dependencies
 
@@ -75,6 +113,32 @@ cd LiveFishTTS
 ./scripts/build-direct.sh
 ```
 
+## Run On iPhone
+
+The repository includes an Xcode project for the iPhone companion app:
+
+```sh
+open LiveFishTTS.xcodeproj
+```
+
+In Xcode:
+
+1. Select the `LiveFishTTSiOS` scheme.
+2. Open the target settings and choose your Apple ID team under Signing & Capabilities.
+3. Connect your iPhone or select a paired wireless iPhone.
+4. Press Run.
+
+The iPhone app includes:
+
+- Fish Audio API key setup in iOS Keychain
+- Voice preset selection and editing
+- Fish voice name import/fetch
+- Speed, volume, output format, latency, and S2-Pro style cue settings
+- Type, submit, immediately keep typing
+- Sequential queue playback through iPhone speaker, wired audio, AirPods, or Bluetooth
+
+The iPhone app does not include Meeting Mode. iOS does not support this app acting as a same-device virtual microphone for Google Meet or other apps.
+
 ## App Usage
 
 - Enter submits the current text.
@@ -132,9 +196,13 @@ Local monitoring is shown as a planned setting. For v1, monitoring through a sec
 - Use `.env.example` only as a placeholder template.
 - The saved API key lives in macOS Keychain.
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Contributions are inbound=outbound: code contributions are AGPL-3.0-or-later, and documentation/free starter phrase content contributions are CC BY 4.0 unless a file says otherwise.
+
 ## Future iPhone Companion
 
-The iPhone companion should keep the same fast flow:
+The included iPhone companion keeps the same fast flow:
 
 - Type text.
 - Submit to Fish Audio.
@@ -143,7 +211,7 @@ The iPhone companion should keep the same fast flow:
 - Store the API key securely with Keychain.
 - Use native iOS audio playback APIs.
 
-iOS should be treated as a companion, not desktop parity. Do not assume an iPhone app can become a system-wide virtual microphone for Google Meet or other apps on the same device. Practical workflows are:
+iOS is treated as a companion, not desktop parity. Do not assume an iPhone app can become a system-wide virtual microphone for Google Meet or other apps on the same device. Practical workflows are:
 
 - Use the iPhone as a standalone speech device in the room.
 - Use the MacBook app for Google Meet virtual microphone routing.
@@ -153,4 +221,10 @@ iOS should be treated as a companion, not desktop parity. Do not assume an iPhon
 ## Official Docs Used
 
 - [Fish Audio Text to Speech](https://docs.fish.audio/developer-guide/core-features/text-to-speech)
+- [Fish Audio API Reference: Text to Speech](https://docs.fish.audio/api-reference/endpoint/openapi-v1/text-to-speech)
+- [Fish Audio OpenAPI JSON](https://api.fish.audio/openapi.json)
 - [Fish Audio Quick Start](https://docs.fish.audio/developer-guide/getting-started/quickstart)
+- [Fish Audio Pricing & Rate Limits](https://docs.fish.audio/developer-guide/models-pricing/pricing-and-rate-limits)
+- [Fish Audio Terms of Service](https://fish.audio/terms/)
+- [GitHub Docs: Licensing a repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository)
+- [GNU AGPLv3](https://www.gnu.org/licenses/agpl-3.0)

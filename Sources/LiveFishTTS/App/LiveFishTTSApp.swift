@@ -14,6 +14,7 @@ struct LiveFishTTSApp: App {
                 .environmentObject(settingsStore)
                 .environmentObject(audioOutput)
                 .environmentObject(speechQueue)
+                .tint(LucyTheme.hotPink)
                 .task {
                     speechQueue.configure(
                         settingsStore: settingsStore,

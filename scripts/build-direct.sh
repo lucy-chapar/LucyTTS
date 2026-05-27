@@ -8,8 +8,9 @@ APP_DIR="$OUTPUT_DIR/LiveFishTTS.app"
 OUTPUT="$APP_DIR/Contents/MacOS/LiveFishTTS"
 
 rm -rf "$APP_DIR"
-mkdir -p "$APP_DIR/Contents/MacOS"
+mkdir -p "$APP_DIR/Contents/MacOS" "$APP_DIR/Contents/Resources"
 cp "$ROOT_DIR/Resources/Info.plist" "$APP_DIR/Contents/Info.plist"
+cp "$ROOT_DIR/Resources/LucyTTS.icns" "$APP_DIR/Contents/Resources/LucyTTS.icns"
 printf "APPL????" > "$APP_DIR/Contents/PkgInfo"
 
 swiftc \

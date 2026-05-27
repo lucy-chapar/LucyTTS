@@ -1,6 +1,6 @@
 import Foundation
 
-enum SpeechItemState: String {
+enum iOSSpeechItemState: String {
     case queued = "Queued"
     case generating = "Generating"
     case playing = "Playing"
@@ -8,14 +8,14 @@ enum SpeechItemState: String {
     case error = "Error"
 }
 
-struct SpeechQueueItem: Identifiable, Equatable {
+struct iOSSpeechQueueItem: Identifiable, Equatable {
     let id = UUID()
     let text: String
-    var state: SpeechItemState = .queued
+    var state: iOSSpeechItemState = .queued
     var errorMessage: String?
 }
 
-enum SpeechSystemStatus: Equatable {
+enum iOSSpeechSystemStatus: Equatable {
     case ready
     case generating
     case playing
@@ -36,16 +36,16 @@ enum SpeechSystemStatus: Equatable {
 }
 
 @MainActor
-final class SpeechQueueManager: ObservableObject {
-    @Published private(set) var items: [SpeechQueueItem] = []
-    @Published private(set) var status: SpeechSystemStatus = .ready
+final class iOSSpeechQueueManager: ObservableObject {
+    @Published private(set) var items: [iOSSpeechQueueItem] = []
+    @Published private(set) var status: iOSSpeechSystemStatus = .ready
     @Published private(set) var lastError: String?
     @Published private(set) var currentCaptionText: String?
     @Published private(set) var lastSpokenText: String?
 
-    private weak var settingsStore: SettingsStore?
+    private weak var settingsStore: iOSSettingsStore?
     private var apiClient: FishAudioClient?
-    private var playbackService: AudioPlaybackService?
+    private var playbackService: iOSAudioPlaybackService?
     private var processingTask: Task<Void, Never>?
     private var stoppingCurrent = false
 
@@ -53,7 +53,7 @@ final class SpeechQueueManager: ObservableObject {
         items.filter { $0.state == .queued }.count
     }
 
-    func configure(settingsStore: SettingsStore, apiClient: FishAudioClient, playbackService: AudioPlaybackService) {
+    func configure(settingsStore: iOSSettingsStore, apiClient: FishAudioClient, playbackService: iOSAudioPlaybackService) {
         self.settingsStore = settingsStore
         self.apiClient = apiClient
         self.playbackService = playbackService
@@ -62,7 +62,7 @@ final class SpeechQueueManager: ObservableObject {
     func enqueue(_ rawText: String) {
         let text = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
-        items.append(SpeechQueueItem(text: text))
+        items.append(iOSSpeechQueueItem(text: text))
         startProcessingIfNeeded()
     }
 
@@ -71,7 +71,7 @@ final class SpeechQueueManager: ObservableObject {
         enqueue(lastSpokenText)
     }
 
-    func removeQueuedItem(_ item: SpeechQueueItem) {
+    func removeQueuedItem(_ item: iOSSpeechQueueItem) {
         guard item.state == .queued else { return }
         items.removeAll { $0.id == item.id && $0.state == .queued }
     }
@@ -85,10 +85,6 @@ final class SpeechQueueManager: ObservableObject {
         playbackService?.stopCurrent()
     }
 
-    func testMeetingAudio() {
-        enqueue("Testing meeting audio.")
-    }
-
     private func startProcessingIfNeeded() {
         guard processingTask == nil else { return }
         processingTask = Task { [weak self] in
@@ -99,7 +95,8 @@ final class SpeechQueueManager: ObservableObject {
     private func processLoop() async {
         defer {
             processingTask = nil
-            if status != .error(lastError ?? "") {
+            if case .error = status {
+            } else {
                 status = .ready
             }
         }
@@ -117,23 +114,17 @@ final class SpeechQueueManager: ObservableObject {
                 currentCaptionText = itemText
                 items[nextIndex].state = .generating
                 status = .generating
-                let config = settingsStore.ttsConfiguration
-                let outputDeviceID = settingsStore.selectedOutputDeviceID
                 let audio = try await apiClient.synthesize(
                     text: itemText,
                     apiKey: apiKey,
-                    configuration: config
+                    configuration: settingsStore.ttsConfiguration
                 )
-
                 guard let currentIndex = items.firstIndex(where: { $0.id == itemID }) else {
                     continue
                 }
                 items[currentIndex].state = .playing
                 status = .playing
-                try await playbackService.play(
-                    data: audio,
-                    outputDeviceID: outputDeviceID == AudioDevice.defaultID ? nil : outputDeviceID
-                )
+                try await playbackService.play(data: audio)
                 if let doneIndex = items.firstIndex(where: { $0.id == itemID }) {
                     items[doneIndex].state = .done
                 }
@@ -142,8 +133,7 @@ final class SpeechQueueManager: ObservableObject {
                 status = .ready
                 lastError = nil
             } catch {
-                let reason = error.localizedDescription
-                if stoppingCurrent, (error as? PlaybackError) == .stopped {
+                if stoppingCurrent, (error as? iOSPlaybackError) == .stopped {
                     if let currentIndex = items.firstIndex(where: { $0.state == .playing || $0.state == .generating }) {
                         lastSpokenText = items[currentIndex].text
                         items[currentIndex].state = .done
@@ -154,7 +144,7 @@ final class SpeechQueueManager: ObservableObject {
                     continue
                 }
                 currentCaptionText = nil
-                markItem(nextIndex, error: reason)
+                markItem(nextIndex, error: error.localizedDescription)
             }
         }
     }
