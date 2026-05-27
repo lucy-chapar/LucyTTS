@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct SettingsView: View {
@@ -51,6 +52,9 @@ struct SettingsView: View {
                         SecureField("Fish Audio API key", text: $apiKey)
                             .textFieldStyle(.roundedBorder)
                     }
+                    Button("Paste") {
+                        pasteIntoAPIKey()
+                    }
                     Toggle("Show", isOn: $showAPIKey)
                         .toggleStyle(.checkbox)
                 }
@@ -89,7 +93,7 @@ struct SettingsView: View {
     private var voiceSettings: some View {
         GroupBox("Voice") {
             VStack(alignment: .leading, spacing: 10) {
-                Picker("Selected voice", selection: $settingsStore.selectedVoicePresetID) {
+                Picker("Selected voice", selection: selectedVoiceBinding) {
                     ForEach(settingsStore.voicePresets) { preset in
                         Text(preset.displayName).tag(preset.id.uuidString)
                     }
@@ -114,8 +118,8 @@ struct SettingsView: View {
                     }
                 }
                 VStack(spacing: 8) {
-                    ForEach(settingsStore.voicePresets.indices, id: \.self) { index in
-                        voicePresetEditor(index: index)
+                    ForEach(settingsStore.voicePresets) { preset in
+                        voicePresetEditor(preset: voicePresetBinding(for: preset))
                     }
                 }
                 voiceTuningSettings
@@ -165,11 +169,7 @@ struct SettingsView: View {
         }
     }
 
-    private func voicePresetEditor(index: Int) -> some View {
-        let presetBinding = Binding<VoicePreset>(
-            get: { settingsStore.voicePresets[index] },
-            set: { settingsStore.voicePresets[index] = $0 }
-        )
+    private func voicePresetEditor(preset presetBinding: Binding<VoicePreset>) -> some View {
         let preset = presetBinding.wrappedValue
 
         return VStack(alignment: .leading, spacing: 6) {
@@ -184,8 +184,13 @@ struct SettingsView: View {
                 }
                 .disabled(settingsStore.voicePresets.count <= 1)
             }
-            TextField("Reference ID", text: presetBinding.referenceID)
-                .font(.system(.body, design: .monospaced))
+            HStack {
+                TextField("Reference ID", text: presetBinding.referenceID)
+                    .font(.system(.body, design: .monospaced))
+                Button("Paste") {
+                    pasteIntoVoiceReference(id: preset.id)
+                }
+            }
             TextField("Notes", text: presetBinding.notes)
                 .font(.caption)
         }
@@ -265,6 +270,41 @@ struct SettingsView: View {
             return .green
         }
         return .secondary
+    }
+
+    private var selectedVoiceBinding: Binding<String> {
+        Binding(
+            get: { settingsStore.selectedVoicePresetID },
+            set: { newValue in
+                guard let id = UUID(uuidString: newValue) else { return }
+                settingsStore.useVoicePreset(id: id)
+            }
+        )
+    }
+
+    private func voicePresetBinding(for preset: VoicePreset) -> Binding<VoicePreset> {
+        Binding(
+            get: {
+                settingsStore.voicePresets.first { $0.id == preset.id } ?? preset
+            },
+            set: { updatedPreset in
+                settingsStore.updateVoicePreset(updatedPreset)
+            }
+        )
+    }
+
+    private func pasteIntoAPIKey() {
+        if let pasted = NSPasteboard.general.string(forType: .string) {
+            apiKey = pasted.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+    }
+
+    private func pasteIntoVoiceReference(id: UUID) {
+        guard let pasted = NSPasteboard.general.string(forType: .string) else { return }
+        guard let index = settingsStore.voicePresets.firstIndex(where: { $0.id == id }) else { return }
+        var preset = settingsStore.voicePresets[index]
+        preset.referenceID = pasted.trimmingCharacters(in: .whitespacesAndNewlines)
+        settingsStore.updateVoicePreset(preset)
     }
 
     private func testAPIKey() {

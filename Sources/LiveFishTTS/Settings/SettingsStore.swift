@@ -165,14 +165,16 @@ final class SettingsStore: ObservableObject {
 
     func addVoicePreset() {
         let preset = VoicePreset(name: "New voice", referenceID: "")
-        voicePresets.append(preset)
+        var updatedPresets = voicePresets
+        updatedPresets.append(preset)
+        voicePresets = updatedPresets
         selectedVoicePresetID = preset.id.uuidString
         saveSettings()
     }
 
     func removeVoicePreset(id: UUID) {
         guard voicePresets.count > 1 else { return }
-        voicePresets.removeAll { $0.id == id }
+        voicePresets = voicePresets.filter { $0.id != id }
         normalizeSelectedVoice()
         saveSettings()
     }
@@ -183,13 +185,23 @@ final class SettingsStore: ObservableObject {
         saveSettings()
     }
 
+    func updateVoicePreset(_ preset: VoicePreset) {
+        guard let index = voicePresets.firstIndex(where: { $0.id == preset.id }) else { return }
+        var updatedPresets = voicePresets
+        updatedPresets[index] = preset
+        voicePresets = updatedPresets
+        saveSettings()
+    }
+
     func updateVoicePresetFromFish(_ model: FishVoiceModel) {
+        var updatedPresets = voicePresets
         if let index = voicePresets.firstIndex(where: { $0.referenceID == model.id }) {
-            voicePresets[index].name = model.title
-            voicePresets[index].notes = model.description ?? voicePresets[index].notes
+            updatedPresets[index].name = model.title
+            updatedPresets[index].notes = model.description ?? updatedPresets[index].notes
         } else {
-            voicePresets.append(VoicePreset(name: model.title, referenceID: model.id, notes: model.description ?? ""))
+            updatedPresets.append(VoicePreset(name: model.title, referenceID: model.id, notes: model.description ?? ""))
         }
+        voicePresets = updatedPresets
         normalizeSelectedVoice()
         saveSettings()
     }

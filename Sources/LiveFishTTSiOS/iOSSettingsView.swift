@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct iOSSettingsView: View {
     @EnvironmentObject private var settingsStore: iOSSettingsStore
@@ -18,6 +19,7 @@ struct iOSSettingsView: View {
                 tuningSection
             }
             .scrollContentBackground(.hidden)
+            .scrollDismissesKeyboard(.interactively)
             .background(LucyTheme.background)
             .navigationTitle("Settings")
             .toolbarBackground(LucyTheme.blush.opacity(0.82), for: .navigationBar)
@@ -27,6 +29,12 @@ struct iOSSettingsView: View {
                     Button("Done") {
                         settingsStore.saveSettings()
                         dismiss()
+                    }
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Hide Keyboard") {
+                        hideKeyboard()
                     }
                 }
             }
@@ -43,25 +51,39 @@ struct iOSSettingsView: View {
 
     private var apiKeySection: some View {
         Section("Fish Audio API Key") {
-            if showAPIKey {
-                TextField("Fish Audio API key", text: $apiKey)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-            } else {
-                SecureField("Fish Audio API key", text: $apiKey)
+            HStack {
+                if showAPIKey {
+                    TextField("Fish Audio API key", text: $apiKey)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .submitLabel(.done)
+                        .onSubmit(hideKeyboard)
+                } else {
+                    SecureField("Fish Audio API key", text: $apiKey)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .submitLabel(.done)
+                        .onSubmit(hideKeyboard)
+                }
+                Button("Paste") {
+                    pasteIntoAPIKey()
+                }
             }
             Toggle("Show API key", isOn: $showAPIKey)
             HStack {
                 Button("Save") {
+                    hideKeyboard()
                     settingsStore.saveAPIKey(apiKey)
                     apiKey = ""
                 }
                 Button(testingKey ? "Testing..." : "Test API key") {
+                    hideKeyboard()
                     testAPIKey()
                 }
                 .disabled(testingKey)
             }
             Button("Replace API key", role: .destructive) {
+                hideKeyboard()
                 settingsStore.replaceAPIKey()
                 apiKey = ""
             }
@@ -73,19 +95,22 @@ struct iOSSettingsView: View {
 
     private var voiceSection: some View {
         Section("Voices") {
-            Picker("Selected voice", selection: $settingsStore.selectedVoicePresetID) {
+            Picker("Selected voice", selection: selectedVoiceBinding) {
                 ForEach(settingsStore.voicePresets) { preset in
                     Text(preset.displayName).tag(preset.id.uuidString)
                 }
             }
             Button("Add voice") {
+                hideKeyboard()
                 settingsStore.addVoicePreset()
             }
             Button(loadingVoices ? "Loading..." : "Import my Fish voices") {
+                hideKeyboard()
                 importFishVoices()
             }
             .disabled(loadingVoices)
             Button(loadingVoices ? "Loading..." : "Fetch Fish names") {
+                hideKeyboard()
                 fetchFishNames()
             }
             .disabled(loadingVoices)
@@ -94,8 +119,8 @@ struct iOSSettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            ForEach(settingsStore.voicePresets.indices, id: \.self) { index in
-                voicePresetEditor(index: index)
+            ForEach(settingsStore.voicePresets) { preset in
+                voicePresetEditor(preset: voicePresetBinding(for: preset))
             }
         }
     }
@@ -105,6 +130,8 @@ struct iOSSettingsView: View {
             TextField("Model", text: $settingsStore.model)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
+                .submitLabel(.done)
+                .onSubmit(hideKeyboard)
             HStack {
                 Text("Speed")
                 Slider(value: $settingsStore.speed, in: 0.5...2.0, step: 0.05)
@@ -118,11 +145,15 @@ struct iOSSettingsView: View {
                     .frame(width: 48, alignment: .trailing)
             }
             TextField("S2-Pro style cue", text: $settingsStore.voiceStyleCue)
+                .submitLabel(.done)
+                .onSubmit(hideKeyboard)
             HStack {
                 Button("Soft feminine") {
+                    hideKeyboard()
                     settingsStore.voiceStyleCue = "speaks in a soft, warm, feminine tone"
                 }
                 Button("Bright feminine") {
+                    hideKeyboard()
                     settingsStore.voiceStyleCue = "speaks in a bright, clear, feminine voice"
                 }
             }
@@ -140,25 +171,34 @@ struct iOSSettingsView: View {
         }
     }
 
-    private func voicePresetEditor(index: Int) -> some View {
-        let presetBinding = Binding<VoicePreset>(
-            get: { settingsStore.voicePresets[index] },
-            set: { settingsStore.voicePresets[index] = $0 }
-        )
+    private func voicePresetEditor(preset presetBinding: Binding<VoicePreset>) -> some View {
         let preset = presetBinding.wrappedValue
 
         return VStack(alignment: .leading, spacing: 8) {
             TextField("Name", text: presetBinding.name)
-            TextField("Reference ID", text: presetBinding.referenceID)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
+                .submitLabel(.done)
+                .onSubmit(hideKeyboard)
+            HStack {
+                TextField("Reference ID", text: presetBinding.referenceID)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .submitLabel(.done)
+                    .onSubmit(hideKeyboard)
+                Button("Paste") {
+                    pasteIntoVoiceReference(id: preset.id)
+                }
+            }
             TextField("Notes", text: presetBinding.notes)
+                .submitLabel(.done)
+                .onSubmit(hideKeyboard)
             HStack {
                 Button(settingsStore.selectedVoicePresetID == preset.id.uuidString ? "Selected" : "Use") {
+                    hideKeyboard()
                     settingsStore.useVoicePreset(id: preset.id)
                 }
                 .disabled(settingsStore.selectedVoicePresetID == preset.id.uuidString)
                 Button("Remove", role: .destructive) {
+                    hideKeyboard()
                     settingsStore.removeVoicePreset(id: preset.id)
                 }
                 .disabled(settingsStore.voicePresets.count <= 1)
@@ -175,6 +215,45 @@ struct iOSSettingsView: View {
             return .green
         }
         return .secondary
+    }
+
+    private var selectedVoiceBinding: Binding<String> {
+        Binding(
+            get: { settingsStore.selectedVoicePresetID },
+            set: { newValue in
+                guard let id = UUID(uuidString: newValue) else { return }
+                settingsStore.useVoicePreset(id: id)
+            }
+        )
+    }
+
+    private func voicePresetBinding(for preset: VoicePreset) -> Binding<VoicePreset> {
+        Binding(
+            get: {
+                settingsStore.voicePresets.first { $0.id == preset.id } ?? preset
+            },
+            set: { updatedPreset in
+                settingsStore.updateVoicePreset(updatedPreset)
+            }
+        )
+    }
+
+    private func pasteIntoAPIKey() {
+        if let pasted = UIPasteboard.general.string {
+            apiKey = pasted.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+    }
+
+    private func pasteIntoVoiceReference(id: UUID) {
+        guard let pasted = UIPasteboard.general.string else { return }
+        guard let index = settingsStore.voicePresets.firstIndex(where: { $0.id == id }) else { return }
+        var preset = settingsStore.voicePresets[index]
+        preset.referenceID = pasted.trimmingCharacters(in: .whitespacesAndNewlines)
+        settingsStore.updateVoicePreset(preset)
+    }
+
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 
     private func testAPIKey() {
