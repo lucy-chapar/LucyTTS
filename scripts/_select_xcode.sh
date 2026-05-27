@@ -17,7 +17,7 @@
 #   4. $HOME/Applications/Xcode*.app
 #   5. Spotlight (mdfind) lookup of any installed Xcode bundle
 
-_livefish_xcode_is_valid() {
+_lucytts_xcode_is_valid() {
     local dev_dir="$1"
     [[ -n "$dev_dir" ]] || return 1
     [[ -x "$dev_dir/usr/bin/xcodebuild" ]] || return 1
@@ -25,7 +25,7 @@ _livefish_xcode_is_valid() {
     return 0
 }
 
-_livefish_pick_newest_xcode() {
+_lucytts_pick_newest_xcode() {
     # Reads Xcode.app paths on stdin (one per line), prints the path of the
     # newest installed Xcode (by CFBundleShortVersionString) to stdout.
     local best_path=""
@@ -47,14 +47,14 @@ _livefish_pick_newest_xcode() {
 }
 
 select_xcode() {
-    if [[ -n "${DEVELOPER_DIR:-}" ]] && _livefish_xcode_is_valid "$DEVELOPER_DIR"; then
+    if [[ -n "${DEVELOPER_DIR:-}" ]] && _lucytts_xcode_is_valid "$DEVELOPER_DIR"; then
         export DEVELOPER_DIR
         return 0
     fi
 
     local current_select
     current_select="$(/usr/bin/xcode-select -p 2>/dev/null || true)"
-    if _livefish_xcode_is_valid "$current_select"; then
+    if _lucytts_xcode_is_valid "$current_select"; then
         export DEVELOPER_DIR="$current_select"
         return 0
     fi
@@ -75,7 +75,7 @@ select_xcode() {
         cat >&2 <<'EOF'
 ERROR: Could not find an Xcode installation.
 
-LiveFishTTS needs Xcode (not just the Command Line Tools) to build.
+Lucy TTS needs Xcode (not just the Command Line Tools) to build.
 
   1. Install Xcode from the Mac App Store, or download it from
      https://developer.apple.com/download/all/
@@ -90,9 +90,9 @@ EOF
     fi
 
     local chosen
-    chosen="$(printf '%s\n' "${candidates[@]}" | _livefish_pick_newest_xcode)"
+    chosen="$(printf '%s\n' "${candidates[@]}" | _lucytts_pick_newest_xcode)"
 
-    if [[ -z "$chosen" ]] || ! _livefish_xcode_is_valid "$chosen/Contents/Developer"; then
+    if [[ -z "$chosen" ]] || ! _lucytts_xcode_is_valid "$chosen/Contents/Developer"; then
         echo "ERROR: Found Xcode at '$chosen' but it does not appear usable." >&2
         return 1
     fi

@@ -1,5 +1,5 @@
 import XCTest
-@testable import LiveFishTTS
+@testable import LucyTTS
 
 /// Smoke tests for input validation on SpeechQueueManager.
 /// Full state-machine coverage (queued -> generating -> playing -> done/error

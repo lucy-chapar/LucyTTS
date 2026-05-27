@@ -1,4 +1,4 @@
-# Lucy TTS (LiveFishTTS)
+# Lucy TTS
 
 Lucy TTS is a lightweight macOS-first live text-to-speech app for fast conversation use. Type text, press Enter or click Speak, and the app immediately clears the input while it generates and plays queued speech in order.
 
@@ -10,7 +10,7 @@ Lucy TTS is accessibility-focused software. It is intended to support communicat
 
 - Source code is licensed under the GNU Affero General Public License v3.0 or later. See [LICENSE](LICENSE).
 - Documentation and free starter phrase content are licensed under Creative Commons Attribution 4.0 International (CC BY 4.0), unless a file says otherwise.
-- "Lucy TTS", "LiveFishTTS", app icons, logos, and related product marks are reserved project branding. See [TRADEMARKS.md](TRADEMARKS.md).
+- "Lucy TTS", app icons, logos, and related product marks are reserved project branding. See [TRADEMARKS.md](TRADEMARKS.md).
 - Notices and third-party service notes live in [NOTICE](NOTICE).
 
 GitHub notes that public repositories need an explicit open-source license for others to freely use, change, and distribute the software. AGPLv3 is used here because Lucy TTS may later include networked sync or account components, and AGPLv3 is designed to keep modified network-service versions source-available to their users.
@@ -67,8 +67,8 @@ swift --version
 ## Run Dev Mode
 
 ```sh
-cd LiveFishTTS
-swift run LiveFishTTS
+cd lucytts
+swift run LucyTTS
 ```
 
 On first launch, open the settings/setup screen and paste your Fish Audio API key. The key is stored in macOS Keychain.
@@ -76,7 +76,7 @@ On first launch, open the settings/setup screen and paste your Fish Audio API ke
 For development only, you may also launch with:
 
 ```sh
-FISH_AUDIO_API_KEY=your_api_key_here swift run LiveFishTTS
+FISH_AUDIO_API_KEY=your_api_key_here swift run LucyTTS
 ```
 
 Normal use does not require Terminal environment variables after saving the key in the app.
@@ -91,7 +91,7 @@ xcode-select --install
 As a local fallback, the app can also be compiled directly against the installed macOS SDK:
 
 ```sh
-cd LiveFishTTS
+cd lucytts
 ./scripts/run-direct.sh
 ```
 
@@ -100,16 +100,16 @@ The fallback runner builds a local `.app` bundle and launches it with `open` so 
 ## Build
 
 ```sh
-cd LiveFishTTS
+cd lucytts
 swift build -c release
 ```
 
-The release executable is written under `.build/release/LiveFishTTS`.
+The release executable is written under `.build/release/LucyTTS`.
 
 Fallback direct build:
 
 ```sh
-cd LiveFishTTS
+cd lucytts
 ./scripts/build-direct.sh
 ```
 
@@ -118,12 +118,12 @@ cd LiveFishTTS
 The repository includes an Xcode project for the iPhone companion app:
 
 ```sh
-open LiveFishTTS.xcodeproj
+open LucyTTS.xcodeproj
 ```
 
 In Xcode:
 
-1. Select the `LiveFishTTSiOS` scheme.
+1. Select the `LucyTTSiOS` scheme.
 2. Open the target settings and choose your Apple ID team under Signing & Capabilities.
 3. Connect your iPhone or select a paired wireless iPhone.
 4. Press Run.
@@ -175,10 +175,10 @@ Fish currently documents prosody controls for speed and volume. Pitch and resona
 
 ## Google Meet Meeting Mode
 
-LiveFishTTS does not install or implement a custom macOS audio driver. For video calls, use an existing virtual audio device.
+Lucy TTS does not install or implement a custom macOS audio driver. For video calls, use an existing virtual audio device.
 
 1. Install [BlackHole](https://existential.audio/blackhole/) or [Loopback](https://rogueamoeba.com/loopback/).
-2. Open LiveFishTTS settings.
+2. Open Lucy TTS settings.
 3. Select the virtual device as the app output device, for example `BlackHole 2ch`.
 4. Turn Meeting Mode on.
 5. In Google Meet, select the same virtual device as the microphone.

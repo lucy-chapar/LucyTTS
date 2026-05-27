@@ -11,7 +11,7 @@
 		100000000000000000000002 /* MsgpackEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000002 /* MsgpackEncoder.swift */; };
 		100000000000000000000003 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000003 /* KeychainService.swift */; };
 		100000000000000000000004 /* VoicePreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000004 /* VoicePreset.swift */; };
-		100000000000000000000005 /* LiveFishTTSiOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000005 /* LiveFishTTSiOSApp.swift */; };
+		100000000000000000000005 /* LucyTTSiOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000005 /* LucyTTSiOSApp.swift */; };
 		100000000000000000000006 /* iOSSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000006 /* iOSSettingsStore.swift */; };
 		100000000000000000000007 /* iOSAudioPlaybackService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000007 /* iOSAudioPlaybackService.swift */; };
 		100000000000000000000008 /* iOSSpeechQueueManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200000000000000000000008 /* iOSSpeechQueueManager.swift */; };
@@ -26,23 +26,23 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		200000000000000000000001 /* FishAudioClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTS/API/FishAudioClient.swift; sourceTree = "<group>"; };
-		200000000000000000000002 /* MsgpackEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTS/API/MsgpackEncoder.swift; sourceTree = "<group>"; };
-		200000000000000000000003 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTS/Settings/KeychainService.swift; sourceTree = "<group>"; };
-		200000000000000000000004 /* VoicePreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTS/Settings/VoicePreset.swift; sourceTree = "<group>"; };
-		200000000000000000000005 /* LiveFishTTSiOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTSiOS/LiveFishTTSiOSApp.swift; sourceTree = "<group>"; };
-		200000000000000000000006 /* iOSSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTSiOS/iOSSettingsStore.swift; sourceTree = "<group>"; };
-		200000000000000000000007 /* iOSAudioPlaybackService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTSiOS/iOSAudioPlaybackService.swift; sourceTree = "<group>"; };
-		200000000000000000000008 /* iOSSpeechQueueManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTSiOS/iOSSpeechQueueManager.swift; sourceTree = "<group>"; };
-		200000000000000000000009 /* iOSContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTSiOS/iOSContentView.swift; sourceTree = "<group>"; };
-		200000000000000000000010 /* iOSSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTSiOS/iOSSettingsView.swift; sourceTree = "<group>"; };
-		200000000000000000000011 /* LiveFishTTSiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LiveFishTTSiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		200000000000000000000012 /* iOSSubmitTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTSiOS/iOSSubmitTextView.swift; sourceTree = "<group>"; };
-		200000000000000000000013 /* iOSLucyTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTSiOS/iOSLucyTheme.swift; sourceTree = "<group>"; };
-		200000000000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/LiveFishTTSiOS/Assets.xcassets; sourceTree = "<group>"; };
-		200000000000000000000015 /* PhrasePresetCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTS/Phrases/PhrasePresetCatalog.swift; sourceTree = "<group>"; };
-		200000000000000000000016 /* VoiceSamplePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTS/API/VoiceSamplePlayer.swift; sourceTree = "<group>"; };
-		200000000000000000000017 /* FishVoiceBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LiveFishTTS/UI/FishVoiceBrowserView.swift; sourceTree = "<group>"; };
+		200000000000000000000001 /* FishAudioClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/API/FishAudioClient.swift; sourceTree = "<group>"; };
+		200000000000000000000002 /* MsgpackEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/API/MsgpackEncoder.swift; sourceTree = "<group>"; };
+		200000000000000000000003 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/Settings/KeychainService.swift; sourceTree = "<group>"; };
+		200000000000000000000004 /* VoicePreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/Settings/VoicePreset.swift; sourceTree = "<group>"; };
+		200000000000000000000005 /* LucyTTSiOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/LucyTTSiOSApp.swift; sourceTree = "<group>"; };
+		200000000000000000000006 /* iOSSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSSettingsStore.swift; sourceTree = "<group>"; };
+		200000000000000000000007 /* iOSAudioPlaybackService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSAudioPlaybackService.swift; sourceTree = "<group>"; };
+		200000000000000000000008 /* iOSSpeechQueueManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSSpeechQueueManager.swift; sourceTree = "<group>"; };
+		200000000000000000000009 /* iOSContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSContentView.swift; sourceTree = "<group>"; };
+		200000000000000000000010 /* iOSSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSSettingsView.swift; sourceTree = "<group>"; };
+		200000000000000000000011 /* LucyTTSiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LucyTTSiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		200000000000000000000012 /* iOSSubmitTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSSubmitTextView.swift; sourceTree = "<group>"; };
+		200000000000000000000013 /* iOSLucyTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTSiOS/iOSLucyTheme.swift; sourceTree = "<group>"; };
+		200000000000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sources/LucyTTSiOS/Assets.xcassets; sourceTree = "<group>"; };
+		200000000000000000000015 /* PhrasePresetCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/Phrases/PhrasePresetCatalog.swift; sourceTree = "<group>"; };
+		200000000000000000000016 /* VoiceSamplePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/API/VoiceSamplePlayer.swift; sourceTree = "<group>"; };
+		200000000000000000000017 /* FishVoiceBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/LucyTTS/UI/FishVoiceBrowserView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,7 +82,7 @@
 		400000000000000000000003 /* iPhone App */ = {
 			isa = PBXGroup;
 			children = (
-				200000000000000000000005 /* LiveFishTTSiOSApp.swift */,
+				200000000000000000000005 /* LucyTTSiOSApp.swift */,
 				200000000000000000000006 /* iOSSettingsStore.swift */,
 				200000000000000000000007 /* iOSAudioPlaybackService.swift */,
 				200000000000000000000008 /* iOSSpeechQueueManager.swift */,
@@ -98,7 +98,7 @@
 		400000000000000000000004 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				200000000000000000000011 /* LiveFishTTSiOS.app */,
+				200000000000000000000011 /* LucyTTSiOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -106,9 +106,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		500000000000000000000001 /* LiveFishTTSiOS */ = {
+		500000000000000000000001 /* LucyTTSiOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 900000000000000000000002 /* Build configuration list for PBXNativeTarget "LiveFishTTSiOS" */;
+			buildConfigurationList = 900000000000000000000002 /* Build configuration list for PBXNativeTarget "LucyTTSiOS" */;
 			buildPhases = (
 				600000000000000000000001 /* Sources */,
 				300000000000000000000001 /* Frameworks */,
@@ -118,9 +118,9 @@
 			);
 			dependencies = (
 			);
-			name = LiveFishTTSiOS;
-			productName = LiveFishTTSiOS;
-			productReference = 200000000000000000000011 /* LiveFishTTSiOS.app */;
+			name = LucyTTSiOS;
+			productName = LucyTTSiOS;
+			productReference = 200000000000000000000011 /* LucyTTSiOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -139,7 +139,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 900000000000000000000001 /* Build configuration list for PBXProject "LiveFishTTS" */;
+			buildConfigurationList = 900000000000000000000001 /* Build configuration list for PBXProject "LucyTTS" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -152,7 +152,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				500000000000000000000001 /* LiveFishTTSiOS */,
+				500000000000000000000001 /* LucyTTSiOS */,
 			);
 		};
 /* End PBXProject section */
@@ -177,7 +177,7 @@
 				100000000000000000000002 /* MsgpackEncoder.swift in Sources */,
 				100000000000000000000003 /* KeychainService.swift in Sources */,
 				100000000000000000000004 /* VoicePreset.swift in Sources */,
-				100000000000000000000005 /* LiveFishTTSiOSApp.swift in Sources */,
+				100000000000000000000005 /* LucyTTSiOSApp.swift in Sources */,
 				100000000000000000000006 /* iOSSettingsStore.swift in Sources */,
 				100000000000000000000007 /* iOSAudioPlaybackService.swift in Sources */,
 				100000000000000000000008 /* iOSSpeechQueueManager.swift in Sources */,
@@ -330,7 +330,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lucianchapar.LiveFishTTS.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lucianchapar.LucyTTS.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_DESTINATIONS = "iphoneos iphonesimulator";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -362,7 +362,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lucianchapar.LiveFishTTS.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lucianchapar.LucyTTS.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_DESTINATIONS = "iphoneos iphonesimulator";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -377,7 +377,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		900000000000000000000001 /* Build configuration list for PBXProject "LiveFishTTS" */ = {
+		900000000000000000000001 /* Build configuration list for PBXProject "LucyTTS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				800000000000000000000001 /* Debug */,
@@ -386,7 +386,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		900000000000000000000002 /* Build configuration list for PBXNativeTarget "LiveFishTTSiOS" */ = {
+		900000000000000000000002 /* Build configuration list for PBXNativeTarget "LucyTTSiOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				800000000000000000000003 /* Debug */,

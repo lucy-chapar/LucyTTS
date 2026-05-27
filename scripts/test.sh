@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run the LiveFishTTS test suite.
+# Run the Lucy TTS test suite.
 # Auto-selects Xcode so this works on any machine with Xcode installed.
 set -euo pipefail
 

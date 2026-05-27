@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build LiveFishTTS into a .app bundle without using SwiftPM. Useful when
+# Build Lucy TTS into a .app bundle without using SwiftPM. Useful when
 # `swift run` from a terminal breaks native AppKit text input focus.
 # Output: path to the freshly built .app bundle, printed on stdout.
 set -euo pipefail
@@ -38,8 +38,8 @@ case "$ARCH" in
 esac
 
 OUTPUT_DIR="$ROOT_DIR/.build/direct"
-APP_DIR="$OUTPUT_DIR/LiveFishTTS.app"
-OUTPUT="$APP_DIR/Contents/MacOS/LiveFishTTS"
+APP_DIR="$OUTPUT_DIR/LucyTTS.app"
+OUTPUT="$APP_DIR/Contents/MacOS/LucyTTS"
 
 rm -rf "$APP_DIR"
 mkdir -p "$APP_DIR/Contents/MacOS" "$APP_DIR/Contents/Resources"
@@ -51,7 +51,7 @@ printf "APPL????" > "$APP_DIR/Contents/PkgInfo"
 "$SWIFTC" \
     -sdk "$SDK_PATH" \
     -target "$TARGET_TRIPLE" \
-    $(/usr/bin/find "$ROOT_DIR/Sources/LiveFishTTS" -name '*.swift') \
+    $(/usr/bin/find "$ROOT_DIR/Sources/LucyTTS" -name '*.swift') \
     -o "$OUTPUT"
 
 echo "$APP_DIR"

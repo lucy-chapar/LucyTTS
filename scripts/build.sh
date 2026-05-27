@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the macOS LiveFishTTS target.
+# Build the macOS Lucy TTS target.
 # Auto-selects Xcode so this works on any machine with Xcode installed.
 set -euo pipefail
 

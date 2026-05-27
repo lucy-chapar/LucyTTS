@@ -1,5 +1,5 @@
 import XCTest
-@testable import LiveFishTTS
+@testable import LucyTTS
 
 final class MsgpackEncoderTests: XCTestCase {
     func testEncodesPositiveFixintAsSingleByte() {

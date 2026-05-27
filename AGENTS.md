@@ -13,14 +13,14 @@ Lucy TTS is a lightweight live text-to-speech app for fast communication while t
 
 ## Repo Layout
 
-- `Sources/LiveFishTTS/`: macOS SwiftUI app and shared code.
-- `Sources/LiveFishTTSiOS/`: iPhone companion SwiftUI app.
-- `Sources/LiveFishTTS/API/`: Fish Audio API client and Msgpack encoder.
-- `Sources/LiveFishTTS/Queue/`: macOS queue manager.
-- `Sources/LiveFishTTSiOS/iOSSpeechQueueManager.swift`: iOS queue manager.
-- `Sources/LiveFishTTS/Settings/`: Keychain, app settings, voice presets.
-- `Sources/LiveFishTTS/Phrases/PhrasePresetCatalog.swift`: shared local-first phrase preset model/store.
-- `LiveFishTTS.xcodeproj`: iOS build project.
+- `Sources/LucyTTS/`: macOS SwiftUI app and shared code.
+- `Sources/LucyTTSiOS/`: iPhone companion SwiftUI app.
+- `Sources/LucyTTS/API/`: Fish Audio API client and Msgpack encoder.
+- `Sources/LucyTTS/Queue/`: macOS queue manager.
+- `Sources/LucyTTSiOS/iOSSpeechQueueManager.swift`: iOS queue manager.
+- `Sources/LucyTTS/Settings/`: Keychain, app settings, voice presets.
+- `Sources/LucyTTS/Phrases/PhrasePresetCatalog.swift`: shared local-first phrase preset model/store.
+- `LucyTTS.xcodeproj`: iOS build project.
 - `scripts/build-direct.sh` and `scripts/run-direct.sh`: macOS fallback build/run helpers.
 
 ## Security Rules
@@ -35,7 +35,7 @@ Lucy TTS is a lightweight live text-to-speech app for fast communication while t
 
 - Code is AGPL-3.0-or-later. Keep `LICENSE` as the unmodified GNU AGPLv3 text.
 - Docs and free starter phrase content are CC BY 4.0 unless marked otherwise.
-- "Lucy TTS", "LiveFishTTS", app icons, logos, and related marks are reserved; see `TRADEMARKS.md`.
+- "Lucy TTS", app icons, logos, and related marks are reserved; see `TRADEMARKS.md`.
 - Basic accessibility-critical communication features stay free.
 - Commercial layers may include tips/donations, phrase sync/backups, curated phrase packs, workflow templates, setup/support, and organizational deployment help.
 - Do not describe Lucy as a Fish reseller, Fish API proxy, hosted speech gateway, or bundled voice-credit provider.
@@ -122,17 +122,17 @@ commands below. Source the helper first so `DEVELOPER_DIR` is set:
 ```sh
 source scripts/_select_xcode.sh && select_xcode
 
-xcodebuild -project LiveFishTTS.xcodeproj \
-  -scheme LiveFishTTSiOS \
+xcodebuild -project LucyTTS.xcodeproj \
+  -scheme LucyTTSiOS \
   -destination 'id=<device-id>' \
   -configuration Debug \
   -allowProvisioningUpdates build
 
 xcrun devicectl device install app --device <device-id> \
-  ~/Library/Developer/Xcode/DerivedData/LiveFishTTS-cfllfjzzhnoshdejkahhlmdxljsk/Build/Products/Debug-iphoneos/LiveFishTTSiOS.app
+  ~/Library/Developer/Xcode/DerivedData/LucyTTS-<hash>/Build/Products/Debug-iphoneos/LucyTTSiOS.app
 
 xcrun devicectl device process launch --device <device-id> \
-  --terminate-existing com.lucianchapar.LiveFishTTS.dev
+  --terminate-existing com.lucianchapar.LucyTTS.dev
 ```
 
 If launch fails with a `Locked` CoreDevice error, the app may still have

@@ -1,4 +1,4 @@
-Lucy TTS / LiveFishTTS
+Lucy TTS
 Copyright (c) 2026 Lucy Chapar and Lucy TTS contributors.
 
 This project is an accessibility-focused text-to-speech client. It is provided
@@ -11,8 +11,8 @@ Licensing summary:
 - Documentation and free starter phrase content are licensed under Creative
   Commons Attribution 4.0 International (CC BY 4.0), unless a file says
   otherwise.
-- The names "Lucy TTS" and "LiveFishTTS", app icons, logos, and related product
-  branding are reserved project marks. See TRADEMARKS.md.
+- The name "Lucy TTS", app icons, logos, and related product branding are
+  reserved project marks. See TRADEMARKS.md.
 
 Brand assets:
 
@@ -20,7 +20,7 @@ The following files are treated as Lucy TTS branding assets and project marks:
 
 - Assets/LucyTTSIconSource.png
 - Resources/LucyTTS.icns
-- Sources/LiveFishTTSiOS/Assets.xcassets/AppIcon.appiconset/*
+- Sources/LucyTTSiOS/Assets.xcassets/AppIcon.appiconset/*
 
 They are included so contributors can build and inspect the official app, but
 the open-source license for the code does not grant permission to use the Lucy

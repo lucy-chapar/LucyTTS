@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 
 @main
-struct LiveFishTTSApp: App {
+struct LucyTTSApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var settingsStore = SettingsStore()
     @StateObject private var audioOutput = AudioOutputService()

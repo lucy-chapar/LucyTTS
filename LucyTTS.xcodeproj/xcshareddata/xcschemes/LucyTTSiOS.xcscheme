@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "500000000000000000000001"
-               BuildableName = "LiveFishTTSiOS.app"
-               BlueprintName = "LiveFishTTSiOS"
-               ReferencedContainer = "container:LiveFishTTS.xcodeproj">
+               BuildableName = "LucyTTSiOS.app"
+               BlueprintName = "LucyTTSiOS"
+               ReferencedContainer = "container:LucyTTS.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "500000000000000000000001"
-            BuildableName = "LiveFishTTSiOS.app"
-            BlueprintName = "LiveFishTTSiOS"
-            ReferencedContainer = "container:LiveFishTTS.xcodeproj">
+            BuildableName = "LucyTTSiOS.app"
+            BlueprintName = "LucyTTSiOS"
+            ReferencedContainer = "container:LucyTTS.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "500000000000000000000001"
-            BuildableName = "LiveFishTTSiOS.app"
-            BlueprintName = "LiveFishTTSiOS"
-            ReferencedContainer = "container:LiveFishTTS.xcodeproj">
+            BuildableName = "LucyTTSiOS.app"
+            BlueprintName = "LucyTTSiOS"
+            ReferencedContainer = "container:LucyTTS.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

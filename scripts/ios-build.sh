@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the LiveFishTTSiOS target for the iOS Simulator as a smoke test.
+# Build the LucyTTSiOS target for the iOS Simulator as a smoke test.
 # Does not install or launch anything; pass `-destination` overrides as args
 # if you want to target a specific simulator.
 set -euo pipefail
@@ -13,8 +13,8 @@ select_xcode
 
 cd "$ROOT_DIR"
 exec xcodebuild \
-    -project LiveFishTTS.xcodeproj \
-    -scheme LiveFishTTSiOS \
+    -project LucyTTS.xcodeproj \
+    -scheme LucyTTSiOS \
     -destination 'generic/platform=iOS Simulator' \
     -configuration Debug \
     CODE_SIGNING_ALLOWED=NO \

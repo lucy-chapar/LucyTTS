@@ -1,7 +1,7 @@
 # Trademarks and Brand Use
 
-This project reserves the names **Lucy TTS** and **LiveFishTTS**, the Lucy TTS
-app icon, logos, product artwork, and related visual identity as project marks.
+This project reserves the name **Lucy TTS**, the Lucy TTS app icon, logos,
+product artwork, and related visual identity as project marks.
 
 The source code license lets you use, study, modify, and share the code under
 the GNU AGPLv3-or-later. It does not grant trademark rights.
@@ -21,7 +21,7 @@ You may:
 Please ask before you:
 
 - Publish an app, service, package, website, or organization using the name
-  "Lucy TTS", "LiveFishTTS", or a confusingly similar name.
+  "Lucy TTS" or a confusingly similar name.
 - Use the Lucy TTS app icon, logo, or artwork as the branding for a modified
   distribution.
 - Suggest that your fork, service, app store listing, support offering, or

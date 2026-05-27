@@ -1,5 +1,5 @@
 import XCTest
-@testable import LiveFishTTS
+@testable import LucyTTS
 
 /// Tests that exercise SettingsStore logic without touching the real Keychain.
 /// Each test gets a private UserDefaults suite so writes don't leak between tests
@@ -12,7 +12,7 @@ final class SettingsStoreTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        suiteName = "LiveFishTTSTests.\(UUID().uuidString)"
+        suiteName = "LucyTTSTests.\(UUID().uuidString)"
         defaults = UserDefaults(suiteName: suiteName)
     }
 

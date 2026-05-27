@@ -3,22 +3,22 @@
 import PackageDescription
 
 let package = Package(
-    name: "LiveFishTTS",
+    name: "LucyTTS",
     platforms: [
         .macOS(.v13)
     ],
     products: [
-        .executable(name: "LiveFishTTS", targets: ["LiveFishTTS"])
+        .executable(name: "LucyTTS", targets: ["LucyTTS"])
     ],
     targets: [
         .executableTarget(
-            name: "LiveFishTTS",
-            path: "Sources/LiveFishTTS"
+            name: "LucyTTS",
+            path: "Sources/LucyTTS"
         ),
         .testTarget(
-            name: "LiveFishTTSTests",
-            dependencies: ["LiveFishTTS"],
-            path: "Tests/LiveFishTTSTests"
+            name: "LucyTTSTests",
+            dependencies: ["LucyTTS"],
+            path: "Tests/LucyTTSTests"
         )
     ]
 )

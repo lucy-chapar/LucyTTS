@@ -18,7 +18,7 @@ enum KeychainError: LocalizedError {
 final class KeychainService {
     static let shared = KeychainService()
 
-    private let service = "LiveFishTTS.FishAudio"
+    private let service = "LucyTTS.FishAudio"
     private let account = "FishAudioAPIKey"
 
     func saveAPIKey(_ apiKey: String) throws {

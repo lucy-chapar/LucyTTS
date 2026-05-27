@@ -38,12 +38,12 @@ jobs:
           xcodebuild -version
           swift --version
 
-      - name: Build LiveFishTTSiOS for iOS Simulator
+      - name: Build LucyTTSiOS for iOS Simulator
         run: |
           set -o pipefail
           xcodebuild \
-            -project LiveFishTTS.xcodeproj \
-            -scheme LiveFishTTSiOS \
+            -project LucyTTS.xcodeproj \
+            -scheme LucyTTSiOS \
             -destination 'generic/platform=iOS Simulator' \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \

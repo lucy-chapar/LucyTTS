@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct LiveFishTTSiOSApp: App {
+struct LucyTTSiOSApp: App {
     @StateObject private var settingsStore = iOSSettingsStore()
     @StateObject private var speechQueue = iOSSpeechQueueManager()
 
