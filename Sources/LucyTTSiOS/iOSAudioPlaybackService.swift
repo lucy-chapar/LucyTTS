@@ -9,9 +9,12 @@ final class iOSAudioPlaybackService: NSObject, AVAudioPlayerDelegate {
     func play(data: Data) async throws {
         try await withCheckedThrowingContinuation { continuation in
             do {
-                let session = AVAudioSession.sharedInstance()
-                try session.setCategory(.playback, mode: .spokenAudio, options: [.duckOthers])
-                try session.setActive(true)
+                // The audio session category is configured at app launch in
+                // LucyTTSiOSApp.configureAudioSession so the iPhone's hardware
+                // volume buttons stay routed to media volume between sentences.
+                // Re-activate here in case it was deactivated by an
+                // interruption (e.g. an incoming call) or a background trip.
+                try AVAudioSession.sharedInstance().setActive(true)
 
                 let player = try AVAudioPlayer(data: data)
                 player.delegate = self
@@ -31,14 +34,15 @@ final class iOSAudioPlaybackService: NSObject, AVAudioPlayerDelegate {
         stoppedByUser = true
         player?.stop()
         player = nil
-        deactivateSession()
+        // Intentionally do not deactivate the audio session here. Keeping it
+        // active between sentences is what makes the hardware volume buttons
+        // continue to control media volume rather than the ringer.
         playbackContinuation?.resume(throwing: iOSPlaybackError.stopped)
         playbackContinuation = nil
     }
 
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         self.player = nil
-        deactivateSession()
         guard let continuation = playbackContinuation else { return }
         playbackContinuation = nil
         if flag {
@@ -52,13 +56,8 @@ final class iOSAudioPlaybackService: NSObject, AVAudioPlayerDelegate {
 
     func audioPlayerDecodeErrorDidOccur(_ player: AVAudioPlayer, error: Error?) {
         self.player = nil
-        deactivateSession()
         playbackContinuation?.resume(throwing: error ?? iOSPlaybackError.playbackFailed)
         playbackContinuation = nil
-    }
-
-    private func deactivateSession() {
-        try? AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
     }
 }
 
