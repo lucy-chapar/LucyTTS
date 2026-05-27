@@ -4,6 +4,8 @@ import UIKit
 struct iOSSubmitTextView: UIViewRepresentable {
     @Binding var text: String
     @Binding var selectedRange: NSRange
+    @Binding var measuredHeight: CGFloat
+    @Binding var isFocused: Bool
     var onSubmit: () -> Void
 
     func makeCoordinator() -> Coordinator {
@@ -35,10 +37,13 @@ struct iOSSubmitTextView: UIViewRepresentable {
         textView.spellCheckingType = .yes
         textView.smartQuotesType = .no
         textView.smartDashesType = .no
+        textView.isScrollEnabled = true
         textView.text = text
 
         DispatchQueue.main.async {
-            textView.becomeFirstResponder()
+            if isFocused {
+                textView.becomeFirstResponder()
+            }
         }
 
         return textView
@@ -49,11 +54,26 @@ struct iOSSubmitTextView: UIViewRepresentable {
             textView.text = text
             textView.selectedRange = clamped(selectedRange, in: textView.text)
         }
+        updateMeasuredHeight(for: textView)
 
         DispatchQueue.main.async {
-            if textView.window != nil, !textView.isFirstResponder {
-                textView.becomeFirstResponder()
+            if textView.window != nil {
+                if isFocused, !textView.isFirstResponder {
+                    textView.becomeFirstResponder()
+                } else if !isFocused, textView.isFirstResponder {
+                    textView.resignFirstResponder()
+                }
             }
+        }
+    }
+
+    private func updateMeasuredHeight(for textView: UITextView) {
+        let fittingWidth = max(textView.bounds.width, 1)
+        let fittingSize = CGSize(width: fittingWidth, height: CGFloat.greatestFiniteMagnitude)
+        let height = textView.sizeThatFits(fittingSize).height
+        guard abs(measuredHeight - height) > 1 else { return }
+        DispatchQueue.main.async {
+            measuredHeight = height
         }
     }
 
@@ -74,10 +94,19 @@ struct iOSSubmitTextView: UIViewRepresentable {
         func textViewDidChange(_ textView: UITextView) {
             parent.text = textView.text
             parent.selectedRange = textView.selectedRange
+            parent.updateMeasuredHeight(for: textView)
         }
 
         func textViewDidChangeSelection(_ textView: UITextView) {
             parent.selectedRange = textView.selectedRange
+        }
+
+        func textViewDidBeginEditing(_ textView: UITextView) {
+            parent.isFocused = true
+        }
+
+        func textViewDidEndEditing(_ textView: UITextView) {
+            parent.isFocused = false
         }
 
         func textView(

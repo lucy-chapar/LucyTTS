@@ -5,8 +5,11 @@ struct iOSContentView: View {
     @EnvironmentObject private var speechQueue: iOSSpeechQueueManager
     @State private var draftText = ""
     @State private var draftSelection = NSRange(location: 0, length: 0)
+    @State private var draftEditorHeight: CGFloat = 76
+    @State private var editorIsFocused = true
     @State private var showSettings = false
     @State private var showEmotePicker = false
+    @State private var showPhraseCatalog = false
 
     var body: some View {
         NavigationStack {
@@ -31,6 +34,15 @@ struct iOSContentView: View {
             iOSSettingsView()
                 .environmentObject(settingsStore)
         }
+        .sheet(isPresented: $showPhraseCatalog) {
+            iOSPhraseCatalogView(
+                items: speechQueue.items,
+                onClose: {
+                    showPhraseCatalog = false
+                },
+                onSelectPhrase: insertPhrase
+            )
+        }
     }
 
     private var mainInterface: some View {
@@ -39,10 +51,6 @@ struct iOSContentView: View {
                 .ignoresSafeArea()
 
             mainContent
-
-            if showEmotePicker {
-                emoteOverlay
-            }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             composerPanel
@@ -54,7 +62,7 @@ struct iOSContentView: View {
         VStack(spacing: 12) {
             header
             captionView
-            historyList
+            Spacer(minLength: 0)
         }
         .padding([.horizontal, .top])
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -76,6 +84,7 @@ struct iOSContentView: View {
             Spacer()
 
             Button("Settings") {
+                editorIsFocused = false
                 showSettings = true
             }
             .font(.callout.weight(.semibold))
@@ -94,9 +103,15 @@ struct iOSContentView: View {
 
     private var composerPanel: some View {
         VStack(spacing: 10) {
-            iOSSubmitTextView(text: $draftText, selectedRange: $draftSelection, onSubmit: submit)
+            iOSSubmitTextView(
+                text: $draftText,
+                selectedRange: $draftSelection,
+                measuredHeight: $draftEditorHeight,
+                isFocused: $editorIsFocused,
+                onSubmit: submit
+            )
                 .font(.title3)
-                .frame(minHeight: 150, maxHeight: 180)
+                .frame(height: editorHeight)
                 .padding(8)
                 .background(LucyTheme.cream)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -105,7 +120,17 @@ struct iOSContentView: View {
                         .stroke(LucyTheme.plum.opacity(0.52), lineWidth: 2)
                 )
 
-            commandButtons
+            if showEmotePicker {
+                iOSEmotePicker(
+                    onClose: {
+                        showEmotePicker = false
+                    },
+                    onSelect: insertEmote
+                )
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            } else {
+                commandButtons
+            }
 
             if let error = speechQueue.lastError {
                 Text(error)
@@ -127,27 +152,28 @@ struct iOSContentView: View {
         )
     }
 
+    private var editorHeight: CGFloat {
+        min(max(draftEditorHeight, 76), 150)
+    }
+
     private var commandButtons: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 6) {
             speakButton
             replayButton
             stopButton
             clearQueueButton
+            phraseCatalogButton
             emoteMenuButton
         }
-        .font(.caption.weight(.semibold))
-        .controlSize(.small)
+        .frame(height: 38)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var speakButton: some View {
         Button(action: submit) {
             Text("Speak")
-                .lineLimit(1)
-                .minimumScaleFactor(0.82)
         }
-            .buttonStyle(.borderedProminent)
-            .tint(LucyTheme.hotPink)
+        .buttonStyle(CommandPillStyle(tint: LucyTheme.hotPink, foreground: .white))
     }
 
     private var replayButton: some View {
@@ -155,11 +181,8 @@ struct iOSContentView: View {
             speechQueue.replayLastSpoken()
         } label: {
             Text("Replay")
-                .lineLimit(1)
-                .minimumScaleFactor(0.78)
         }
-        .buttonStyle(.bordered)
-        .tint(LucyTheme.plum)
+        .buttonStyle(CommandPillStyle(tint: LucyTheme.plum.opacity(0.22), foreground: LucyTheme.plum))
         .disabled(speechQueue.lastSpokenText == nil)
     }
 
@@ -168,11 +191,8 @@ struct iOSContentView: View {
             speechQueue.stopCurrent()
         } label: {
             Text("Stop")
-                .lineLimit(1)
-                .minimumScaleFactor(0.82)
         }
-        .buttonStyle(.bordered)
-        .tint(LucyTheme.plum)
+        .buttonStyle(CommandPillStyle(tint: LucyTheme.plum.opacity(0.22), foreground: LucyTheme.plum))
     }
 
     private var clearQueueButton: some View {
@@ -180,11 +200,18 @@ struct iOSContentView: View {
             speechQueue.clearQueue()
         } label: {
             Text("Clear")
-                .lineLimit(1)
-                .minimumScaleFactor(0.82)
         }
-        .buttonStyle(.bordered)
-        .tint(LucyTheme.plum)
+        .buttonStyle(CommandPillStyle(tint: LucyTheme.plum.opacity(0.22), foreground: LucyTheme.plum))
+    }
+
+    private var phraseCatalogButton: some View {
+        Button {
+            editorIsFocused = false
+            showPhraseCatalog = true
+        } label: {
+            Text("Phrases")
+        }
+        .buttonStyle(CommandPillStyle(tint: LucyTheme.plum.opacity(0.22), foreground: LucyTheme.plum))
     }
 
     private var emoteMenuButton: some View {
@@ -208,79 +235,6 @@ struct iOSContentView: View {
                     .transition(.opacity.combined(with: .scale(scale: 0.98)))
             }
         }
-    }
-
-    private var historyList: some View {
-        ScrollViewReader { proxy in
-            ScrollView {
-                LazyVStack(spacing: 8) {
-                    ForEach(speechQueue.items) { item in
-                        historyRow(for: item)
-                            .id(item.id)
-                    }
-                }
-                .padding(.vertical, 2)
-            }
-            .onChange(of: speechQueue.items.last?.id) { id in
-                guard let id else { return }
-                withAnimation(.easeOut(duration: 0.18)) {
-                    proxy.scrollTo(id, anchor: .bottom)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    private func historyRow(for item: iOSSpeechQueueItem) -> some View {
-        VStack(alignment: .leading, spacing: 5) {
-            HStack(alignment: .firstTextBaseline) {
-                Text(item.text)
-                    .font(.body)
-                    .lineLimit(3)
-                    .foregroundStyle(LucyTheme.plum)
-                Spacer(minLength: 10)
-                Text(item.state.rawValue)
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(item.state == .error ? .red : LucyTheme.plum.opacity(0.68))
-            }
-            if let error = item.errorMessage {
-                Text(error)
-                    .font(.caption)
-                    .foregroundStyle(.red)
-            }
-            if item.state == .queued {
-                Button("Remove") {
-                    speechQueue.removeQueuedItem(item)
-                }
-                .font(.caption)
-                .tint(LucyTheme.plum)
-            }
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(LucyTheme.cream.opacity(0.72))
-        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-    }
-
-    private var emoteOverlay: some View {
-        ZStack {
-            Color.black.opacity(0.18)
-                .ignoresSafeArea()
-                .onTapGesture {
-                    showEmotePicker = false
-                }
-
-            iOSEmotePicker(
-                onClose: {
-                    showEmotePicker = false
-                },
-                onSelect: insertEmote
-            )
-            .padding(.horizontal, 12)
-            .transition(.scale(scale: 0.98).combined(with: .opacity))
-        }
-        .zIndex(10)
     }
 
     private var setupView: some View {
@@ -311,15 +265,22 @@ struct iOSContentView: View {
         speechQueue.enqueue(captured)
         draftText = ""
         draftSelection = NSRange(location: 0, length: 0)
+        editorIsFocused = true
     }
 
     private func insertEmote(_ tag: String) {
-        let insertion = "\(tag) "
+        insertPhrase("\(tag) ")
+        showEmotePicker = false
+    }
+
+    private func insertPhrase(_ phrase: String) {
+        let insertion = phrase
         let original = draftText as NSString
         let range = clamped(draftSelection, in: original)
         draftText = original.replacingCharacters(in: range, with: insertion)
         draftSelection = NSRange(location: range.location + (insertion as NSString).length, length: 0)
-        showEmotePicker = false
+        showPhraseCatalog = false
+        editorIsFocused = true
     }
 
     private func clamped(_ range: NSRange, in text: NSString) -> NSRange {
@@ -359,10 +320,177 @@ private struct PhraseCatalogPhrase: Identifiable, Equatable {
 }
 
 private let starterPhraseCatalogTabs = [
-    PhraseCatalogTab(name: "Quick", phrases: []),
-    PhraseCatalogTab(name: "Care", phrases: []),
-    PhraseCatalogTab(name: "Meeting", phrases: [])
+    PhraseCatalogTab(
+        name: "Quick",
+        phrases: [
+            PhraseCatalogPhrase(title: "One sec", text: "One sec."),
+            PhraseCatalogPhrase(title: "Typing", text: "I'm typing."),
+            PhraseCatalogPhrase(title: "Repeat", text: "Could you repeat that?"),
+            PhraseCatalogPhrase(title: "Thank you", text: "Thank you.")
+        ]
+    ),
+    PhraseCatalogTab(
+        name: "Care",
+        phrases: [
+            PhraseCatalogPhrase(title: "Water", text: "Could I have some water?"),
+            PhraseCatalogPhrase(title: "Break", text: "I need a short break."),
+            PhraseCatalogPhrase(title: "Help", text: "I need help with something."),
+            PhraseCatalogPhrase(title: "Okay", text: "I'm okay.")
+        ]
+    ),
+    PhraseCatalogTab(
+        name: "Meeting",
+        phrases: [
+            PhraseCatalogPhrase(title: "Give me a second", text: "Can you give me a second?"),
+            PhraseCatalogPhrase(title: "Question", text: "I have a question."),
+            PhraseCatalogPhrase(title: "Agree", text: "That makes sense to me."),
+            PhraseCatalogPhrase(title: "Come back", text: "Can we come back to that?")
+        ]
+    )
 ]
+
+private struct CommandPillStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
+    var tint: Color
+    var foreground: Color
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(foreground.opacity(isEnabled ? 1 : 0.5))
+            .lineLimit(1)
+            .minimumScaleFactor(0.62)
+            .frame(maxWidth: .infinity, minHeight: 34)
+            .padding(.horizontal, 4)
+            .background(tint.opacity(configuration.isPressed ? 0.72 : 1))
+            .clipShape(Capsule())
+            .opacity(isEnabled ? 1 : 0.62)
+    }
+}
+
+private struct iOSPhraseCatalogView: View {
+    let items: [iOSSpeechQueueItem]
+    var onClose: () -> Void
+    var onSelectPhrase: (String) -> Void
+
+    @State private var selectedTabName = starterPhraseCatalogTabs.first?.name ?? "Quick"
+
+    private var tabNames: [String] {
+        starterPhraseCatalogTabs.map(\.name) + ["History"]
+    }
+
+    private var historyItems: [iOSSpeechQueueItem] {
+        Array(items.reversed())
+    }
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                LucyTheme.background
+                    .ignoresSafeArea()
+
+                VStack(spacing: 14) {
+                    Picker("Catalog", selection: $selectedTabName) {
+                        ForEach(tabNames, id: \.self) { name in
+                            Text(name).tag(name)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    catalogBody
+                }
+                .padding()
+            }
+            .navigationTitle("Phrases")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Close", action: onClose)
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(LucyTheme.plum)
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+    }
+
+    @ViewBuilder
+    private var catalogBody: some View {
+        if selectedTabName == "History" {
+            historyContent
+        } else if let tab = starterPhraseCatalogTabs.first(where: { $0.name == selectedTabName }) {
+            phraseContent(for: tab)
+        }
+    }
+
+    private func phraseContent(for tab: PhraseCatalogTab) -> some View {
+        ScrollView {
+            LazyVStack(spacing: 10) {
+                if tab.phrases.isEmpty {
+                    emptyState("No phrases yet.")
+                } else {
+                    ForEach(tab.phrases) { phrase in
+                        phraseRow(title: phrase.title, detail: phrase.text) {
+                            onSelectPhrase(phrase.text)
+                        }
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+        }
+    }
+
+    private var historyContent: some View {
+        ScrollView {
+            LazyVStack(spacing: 10) {
+                if historyItems.isEmpty {
+                    emptyState("No history yet.")
+                } else {
+                    ForEach(historyItems) { item in
+                        phraseRow(title: item.text, detail: item.state.rawValue) {
+                            onSelectPhrase(item.text)
+                        }
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+        }
+    }
+
+    private func phraseRow(title: String, detail: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(LucyTheme.plum)
+                    .lineLimit(2)
+                if detail != title {
+                    Text(detail)
+                        .font(.caption)
+                        .foregroundStyle(LucyTheme.plum.opacity(0.62))
+                        .lineLimit(2)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(12)
+            .background(Color.white.opacity(0.42))
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(LucyTheme.hotPink.opacity(0.2), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func emptyState(_ text: String) -> some View {
+        Text(text)
+            .font(.body.weight(.medium))
+            .foregroundStyle(LucyTheme.plum.opacity(0.62))
+            .frame(maxWidth: .infinity, minHeight: 180)
+    }
+}
 
 private struct EmoteButton: View {
     var action: () -> Void
@@ -370,11 +498,12 @@ private struct EmoteButton: View {
     var body: some View {
         Button(action: action) {
             Text("Emote")
-                .font(.callout.weight(.semibold))
+                .font(.caption.weight(.semibold))
                 .foregroundStyle(.white)
                 .lineLimit(1)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 7)
+                .minimumScaleFactor(0.62)
+                .frame(maxWidth: .infinity, minHeight: 34)
+                .padding(.horizontal, 4)
                 .background(
                     LinearGradient(
                         colors: [.red, .orange, .yellow, .green, .blue, .purple],
