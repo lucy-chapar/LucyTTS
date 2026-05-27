@@ -157,6 +157,30 @@ green. CI uses GitHub's `macos-15` runners where `xcode-select -p` is
 already correct, so the workflow does not need the `_select_xcode.sh`
 helper.
 
+## Beta Website (`/docs`)
+
+The `/docs` folder is the source of the public Lucy TTS website at
+<https://lucy-chapar.github.io/LucyTTS/>. It is also where the public
+Privacy Policy lives — that URL is given to Apple App Store Connect.
+
+Before editing anything in `/docs`:
+
+- Read [`docs/STYLE.md`](docs/STYLE.md). The rules there are non-negotiable.
+- Default audience: someone who could assemble a 3D-printer kit. Not a
+  developer, not a journalist, not an investor.
+- Never claim a feature works if it does not ship in the latest build.
+  Mark unbuilt features as "planned" or "coming."
+- Never use marketing superlatives ("blazingly fast", "the best",
+  "revolutionary", "magical", "simply", "just").
+- Always end an instruction with "What you should see now" and provide an
+  "If something's off" fallback.
+- Never quote a Fish Audio price — always link to Fish's current pricing
+  page. Prices drift; the page is the source of truth.
+- Never write or paste a real API key, even in an example.
+- The Privacy Policy (`docs/privacy.md`) must remain factually accurate.
+  If you change app behavior that affects what leaves the device, update
+  the policy in the same commit.
+
 ## Git Notes
 
 - Current active development has been on `codex/ios-compatible-v2`.

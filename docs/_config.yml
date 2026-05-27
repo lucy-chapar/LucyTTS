@@ -1,0 +1,44 @@
+title: Lucy TTS
+description: A fast, bring-your-own-key text-to-speech app for live conversations when typing is easier than speaking.
+url: https://lucy-chapar.github.io
+baseurl: /LucyTTS
+
+theme: jekyll-theme-cayman
+
+# No analytics, no tracking. This site is the same posture as the app.
+google_analytics:
+plausible:
+
+show_downloads: false
+
+# Repo links shown by the cayman theme header.
+github:
+  repository_url: https://github.com/lucy-chapar/LucyTTS
+  repository_nwo: lucy-chapar/LucyTTS
+
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+
+# Page-level navigation. Edit this to add or reorder top-of-page links.
+nav:
+  - title: Home
+    url: /
+  - title: Setup guide
+    url: /setup-guide/
+  - title: Privacy
+    url: /privacy/
+  - title: Troubleshooting
+    url: /troubleshooting/
+  - title: Feedback
+    url: /feedback/
+
+exclude:
+  - README.md
+  - STYLE.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
