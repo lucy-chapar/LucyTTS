@@ -68,6 +68,36 @@ one. The Keychain entry is deleted and Lucy returns to the first-run setup scree
 
 ## Voice and audio problems
 
+### Lucy spoke real-sounding words I didn't type
+
+This is a known characteristic of Fish Audio's S2-Pro model: it occasionally
+**hallucinates** and produces fluent speech with the wrong words. It is not a
+Lucy bug — the same input through Fish's own playground will sometimes do the
+same thing. It's most common with custom or community-uploaded voices, very
+short inputs, and text containing names, abbreviations, or numbers.
+
+What to do, in order:
+
+1. **Tap Replay.** Replay re-sends the same text to Fish, and because the
+   hallucination is non-deterministic the second take is almost always clean.
+   This is your fastest fix in the moment.
+2. **Check the style cue field.** Open **Settings → Tuning → Voice style cue**.
+   If anything is in there, it gets prepended to every sentence as
+   `[cue] text`, and Fish interprets it as a prosody instruction. Freeform
+   sentences in this field will corrupt every output. If you didn't mean to
+   set it, clear the field.
+   ([#8](https://github.com/lucy-chapar/LucyTTS/issues/8) tracks adding guard
+   rails so this is harder to do by accident.)
+3. **Try a different voice.** Switch to Lucy's default voice as a control
+   (Reference ID `11a3219f88c346929ecb671d695e5a97`). If the default behaves
+   well and your custom voice doesn't, that voice is hallucination-prone and
+   the fix is to pick a different one. Fish's official showcase voices and
+   high-popularity community voices tend to be much more reliable than
+   recently-uploaded clones.
+4. **Try the older model.** Open **Settings → Tuning → Model** and switch
+   from `s2-pro` to `s2`. The non-Pro model is less expressive but
+   hallucinates much less.
+
 ### The voice sounds wrong, slow, robotic, or has the wrong accent
 
 You're hearing the voice that the **Reference ID** in your active voice preset points
