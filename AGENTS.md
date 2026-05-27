@@ -84,57 +84,78 @@ Phrase presets are shared through `PhrasePresetCatalog` and loaded with `PhraseP
 - Design future editing/sync as data-layer changes, not view-only hardcoding.
 - Existing phrase/history UI should use the shared catalog when practical.
 
-## macOS Build/Run
+## Build/Run (use the wrappers)
 
-Preferred:
+The owner does not program. Always use the wrappers below. They auto-detect
+the installed Xcode and set `DEVELOPER_DIR` even when `xcode-select -p`
+points at the Command Line Tools, which is the default state on this
+machine. Never run bare `swift build`, `swift test`, or `xcodebuild`
+without `DEVELOPER_DIR` already exported. If you do, you will see
+`xcrun: error: unable to lookup item 'PlatformPath'` and may incorrectly
+conclude that something is broken.
+
+Preferred entry points:
+
+| Task | Command |
+|------|---------|
+| Build macOS app | `make build` |
+| Run macOS test suite | `make test` |
+| Launch Lucy TTS as a real .app bundle | `make run` |
+| Smoke-build the iOS target (simulator) | `make ios-build` |
+| Diagnose toolchain issues | `make doctor` |
+| Remove build artifacts | `make clean` |
+
+Each `make` target is a one-line call into `scripts/*.sh`; the shell
+scripts can be invoked directly with the same effect (e.g.
+`./scripts/build.sh`). All of them source `scripts/_select_xcode.sh`.
+
+If `make doctor` reports `ERROR: Could not find an Xcode installation`,
+that is a real environment problem (Xcode is not installed in any standard
+location). Otherwise trust the wrappers.
+
+### iOS device install/launch
+
+`make ios-build` only builds for the iOS Simulator without code signing.
+To deploy to a real iPhone, use Xcode itself or run the longer device
+commands below. Source the helper first so `DEVELOPER_DIR` is set:
 
 ```sh
-swift build
-swift run LiveFishTTS
-```
+source scripts/_select_xcode.sh && select_xcode
 
-Fallback app bundle run, useful when terminal focus breaks native text input:
-
-```sh
-./scripts/run-direct.sh
-```
-
-## iOS Build/Run
-
-Use the installed Xcode app when available:
-
-```sh
-DEVELOPER_DIR=/Users/<you>/Applications/Xcode-26.5.0.app/Contents/Developer \
 xcodebuild -project LiveFishTTS.xcodeproj \
   -scheme LiveFishTTSiOS \
   -destination 'id=<device-id>' \
   -configuration Debug \
   -allowProvisioningUpdates build
-```
 
-Install/launch with:
-
-```sh
-DEVELOPER_DIR=/Users/<you>/Applications/Xcode-26.5.0.app/Contents/Developer \
 xcrun devicectl device install app --device <device-id> \
-  /Users/<you>/Library/Developer/Xcode/DerivedData/LiveFishTTS-cfllfjzzhnoshdejkahhlmdxljsk/Build/Products/Debug-iphoneos/LiveFishTTSiOS.app
+  ~/Library/Developer/Xcode/DerivedData/LiveFishTTS-cfllfjzzhnoshdejkahhlmdxljsk/Build/Products/Debug-iphoneos/LiveFishTTSiOS.app
 
-DEVELOPER_DIR=/Users/<you>/Applications/Xcode-26.5.0.app/Contents/Developer \
 xcrun devicectl device process launch --device <device-id> \
   --terminate-existing com.lucianchapar.LiveFishTTS.dev
 ```
 
-If launch fails with a `Locked` CoreDevice error, the app may still have installed successfully; unlock the iPhone and launch again.
+If launch fails with a `Locked` CoreDevice error, the app may still have
+installed successfully; unlock the iPhone and launch again.
 
 ## Validation Checklist
 
 Run what matches the touched code:
 
-- Shared/macOS Swift: `swift build`
-- iOS target: `xcodebuild ... -scheme LiveFishTTSiOS ... build`
+- Shared/macOS Swift: `make build && make test`
+- iOS target: `make ios-build`
 - Whitespace sanity: `git diff --check`
 
-For iPhone UX changes, prefer installing on device when possible because keyboard/safe-area behavior is the point.
+For iPhone UX changes, prefer installing on device when possible because
+keyboard/safe-area behavior is the point.
+
+## CI
+
+`.github/workflows/ci.yml` runs `swift build`, `swift test`, and the iOS
+simulator build on every push to `main` and every pull request. Keep it
+green. CI uses GitHub's `macos-15` runners where `xcode-select -p` is
+already correct, so the workflow does not need the `_select_xcode.sh`
+helper.
 
 ## Git Notes
 

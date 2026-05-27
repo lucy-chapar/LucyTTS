@@ -53,24 +53,30 @@ for API requests.
 
 ## Development Checks
 
+Always use the wrappers in `scripts/` (or the equivalent `make` targets)
+rather than bare `swift` / `xcodebuild` commands. The wrappers auto-detect
+your installed Xcode and set `DEVELOPER_DIR` for you, so the build works
+even if `xcode-select -p` is pointing at the Command Line Tools (which is
+common on developer machines).
+
 Run the checks that match your changes:
 
 ```sh
-swift build
-git diff --check
+make build         # macOS SwiftPM build
+make test          # macOS unit tests
+make ios-build     # iOS simulator smoke build
+git diff --check   # whitespace sanity
 ```
 
-For iOS changes, also build the Xcode target:
+If you hit toolchain trouble, run `make doctor` to see exactly which
+Xcode the wrappers selected and what versions of `swift` / `xcodebuild`
+are in use.
 
-```sh
-DEVELOPER_DIR=/Users/<you>/Applications/Xcode-26.5.0.app/Contents/Developer \
-xcodebuild -project LiveFishTTS.xcodeproj \
-  -scheme LiveFishTTSiOS \
-  -destination 'generic/platform=iOS' \
-  -configuration Debug build
-```
+Use a real iPhone for keyboard/safe-area UI fixes when practical; the
+simulator build only proves the iOS code compiles.
 
-Use a real device for iPhone keyboard/safe-area UI fixes when practical.
+CI (`.github/workflows/ci.yml`) runs the same `swift build`, `swift test`,
+and iOS simulator build on every push and pull request.
 
 ## Security
 
