@@ -21,15 +21,22 @@ struct iOSSettingsView: View {
             .scrollContentBackground(.hidden)
             .scrollDismissesKeyboard(.interactively)
             .background(LucyTheme.background)
-            .navigationTitle("Settings")
-            .toolbarBackground(LucyTheme.blush.opacity(0.82), for: .navigationBar)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(LucyTheme.blush.opacity(0.92), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Settings")
+                        .font(.headline)
+                        .foregroundStyle(LucyTheme.plum)
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
                         settingsStore.saveSettings()
                         dismiss()
                     }
+                    .foregroundStyle(LucyTheme.plum)
+                    .fontWeight(.semibold)
                 }
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
@@ -48,7 +55,7 @@ struct iOSSettingsView: View {
     }
 
     private var apiKeySection: some View {
-        Section("Fish Audio API Key") {
+        Section {
             if showAPIKey {
                 TextField("Fish Audio API key", text: $apiKey)
                     .textInputAutocapitalization(.never)
@@ -83,6 +90,8 @@ struct iOSSettingsView: View {
             Text(settingsStore.apiKeyStatus.label)
                 .font(.caption)
                 .foregroundStyle(statusColor)
+        } header: {
+            lucySectionHeader("Fish Audio API Key")
         }
     }
 
@@ -106,14 +115,14 @@ struct iOSSettingsView: View {
             }
             .disabled(!settingsStore.hasUsableAPIKey)
         } header: {
-            Text("Voice")
+            lucySectionHeader("Voice")
         } footer: {
             if !settingsStore.hasUsableAPIKey {
                 Text("Save a Fish Audio API key above to browse voices.")
             }
         }
 
-        Section("Advanced") {
+        Section {
             Button {
                 hideKeyboard()
                 _ = settingsStore.addVoicePreset()
@@ -139,6 +148,8 @@ struct iOSSettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+        } header: {
+            lucySectionHeader("Advanced")
         }
 
         if let preset = settingsStore.selectedVoicePreset {
@@ -155,7 +166,7 @@ struct iOSSettingsView: View {
     }
 
     private var tuningSection: some View {
-        Section("Tuning") {
+        Section {
             TextField("Model", text: $settingsStore.model)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
@@ -197,6 +208,8 @@ struct iOSSettingsView: View {
             Text("iPhone playback uses speaker, wired audio, AirPods, or Bluetooth. iOS cannot provide a same-device virtual microphone for Meet.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+        } header: {
+            lucySectionHeader("Tuning")
         }
     }
 
@@ -222,6 +235,13 @@ struct iOSSettingsView: View {
 
     private func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+
+    private func lucySectionHeader(_ title: String) -> some View {
+        Text(title)
+            .font(.footnote.weight(.semibold))
+            .foregroundStyle(LucyTheme.plum)
+            .textCase(.uppercase)
     }
 
     private func testAPIKey() {
@@ -333,7 +353,7 @@ private struct iOSVoicePresetEditor: View {
     }
 
     var body: some View {
-        Section("Selected Voice Details") {
+        Section {
             TextField("Name", text: $name)
                 .textInputAutocapitalization(.words)
                 .submitLabel(.done)
@@ -366,6 +386,11 @@ private struct iOSVoicePresetEditor: View {
                 onRemove(preset.id)
             }
             .disabled(!canRemove)
+        } header: {
+            Text("Selected Voice Details")
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(LucyTheme.plum)
+                .textCase(.uppercase)
         }
         .onDisappear {
             saveIfChanged()

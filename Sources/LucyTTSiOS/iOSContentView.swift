@@ -4,7 +4,9 @@ struct iOSContentView: View {
     @EnvironmentObject private var settingsStore: iOSSettingsStore
     @EnvironmentObject private var speechQueue: iOSSpeechQueueManager
     @StateObject private var phrasePresetStore = PhrasePresetStore()
-    @State private var draftText = ""
+    // @SceneStorage so a draft survives backgrounding and iOS terminating the
+    // app for memory, but is intentionally cleared on a full force-quit.
+    @SceneStorage("draftText") private var draftText = ""
     @State private var draftSelection = NSRange(location: 0, length: 0)
     @State private var draftEditorHeight: CGFloat = 76
     @State private var editorIsFocused = true
