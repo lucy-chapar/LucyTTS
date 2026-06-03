@@ -31,6 +31,8 @@ struct SubmitTextView: NSViewRepresentable {
         }
         textView.delegate = context.coordinator
         textView.font = .systemFont(ofSize: 24)
+        textView.textColor = .black
+        textView.insertionPointColor = .black
         textView.textContainerInset = NSSize(width: 14, height: 14)
         textView.isRichText = false
         textView.isAutomaticQuoteSubstitutionEnabled = false
@@ -52,6 +54,8 @@ struct SubmitTextView: NSViewRepresentable {
         if textView.string != text {
             textView.string = text
         }
+        textView.textColor = .black
+        textView.insertionPointColor = .black
         if let insertion = pendingInsertion,
            context.coordinator.lastAppliedInsertionID != insertion.id {
             context.coordinator.lastAppliedInsertionID = insertion.id

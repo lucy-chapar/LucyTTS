@@ -1,6 +1,10 @@
 import SwiftUI
 
 enum LucyTheme {
+    static let text = Color.black
+    static let textSecondary = Color.black.opacity(0.72)
+    static let textMuted = Color.black.opacity(0.62)
+
     static let blush = Color(red: 1.0, green: 0.75, blue: 0.81)
     static let blushDeep = Color(red: 0.96, green: 0.48, blue: 0.62)
     static let cream = Color(red: 1.0, green: 0.92, blue: 0.77)
