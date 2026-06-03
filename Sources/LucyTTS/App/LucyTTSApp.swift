@@ -15,6 +15,7 @@ struct LucyTTSApp: App {
                 .environmentObject(audioOutput)
                 .environmentObject(speechQueue)
                 .tint(LucyTheme.hotPink)
+                .preferredColorScheme(.light)
                 .task {
                     speechQueue.configure(
                         settingsStore: settingsStore,

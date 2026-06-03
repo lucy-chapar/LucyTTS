@@ -5,6 +5,7 @@ enum MsgpackValue {
     case int(Int)
     case double(Double)
     case bool(Bool)
+    case data(Data)
     case map([String: MsgpackValue])
 }
 
@@ -26,6 +27,8 @@ enum MsgpackEncoder {
             data.append(contentsOf: double.bitPattern.bigEndianBytes)
         case .bool(let bool):
             data.append(bool ? 0xc3 : 0xc2)
+        case .data(let bytes):
+            appendBinary(bytes, to: &data)
         case .map(let map):
             appendMapHeader(count: map.count, to: &data)
             for key in map.keys.sorted() {
@@ -68,6 +71,21 @@ enum MsgpackEncoder {
             data.append(0xd3)
             data.append(contentsOf: Int64(int).bigEndianBytes)
         }
+    }
+
+    private static func appendBinary(_ bytes: Data, to data: inout Data) {
+        let count = bytes.count
+        if count <= UInt8.max {
+            data.append(0xc4)
+            data.append(UInt8(count))
+        } else if count <= UInt16.max {
+            data.append(0xc5)
+            data.append(contentsOf: UInt16(count).bigEndianBytes)
+        } else {
+            data.append(0xc6)
+            data.append(contentsOf: UInt32(count).bigEndianBytes)
+        }
+        data.append(bytes)
     }
 
     private static func appendMapHeader(count: Int, to data: inout Data) {

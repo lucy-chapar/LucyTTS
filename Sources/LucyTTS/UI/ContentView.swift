@@ -47,19 +47,19 @@ struct ContentView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Lucy TTS")
                     .font(.title2.bold())
-                    .foregroundStyle(LucyTheme.plum)
+                    .foregroundStyle(LucyTheme.text)
                 Text(routeSummary)
                     .font(.caption)
-                    .foregroundStyle(LucyTheme.plum.opacity(0.72))
+                    .foregroundStyle(LucyTheme.textSecondary)
             }
             Spacer()
             StatusPill(text: speechQueue.status.label)
             Text("\(speechQueue.queuedCount) queued")
-                .foregroundStyle(LucyTheme.plum.opacity(0.72))
+                .foregroundStyle(LucyTheme.textSecondary)
             Button("Settings") {
                 showSettings = true
             }
-            .tint(LucyTheme.plum)
+            .tint(LucyTheme.text)
         }
         .padding()
     }
@@ -93,20 +93,20 @@ struct ContentView: View {
                 Button("Replay") {
                     speechQueue.replayLastSpoken()
                 }
-                .tint(LucyTheme.plum)
+                .tint(LucyTheme.text)
                 .disabled(speechQueue.lastSpokenText == nil)
                 Button("Stop") {
                     speechQueue.stopCurrent()
                 }
-                .tint(LucyTheme.plum)
+                .tint(LucyTheme.text)
                 Button("Clear queue") {
                     speechQueue.clearQueue()
                 }
-                .tint(LucyTheme.plum)
+                .tint(LucyTheme.text)
                 Button("Phrases") {
                     showPhraseCatalog = true
                 }
-                .tint(LucyTheme.plum)
+                .tint(LucyTheme.text)
                 .popover(isPresented: $showPhraseCatalog, arrowEdge: .bottom) {
                     PhraseCatalogPopover(
                         catalog: phrasePresetStore.catalog,
@@ -167,6 +167,7 @@ struct ContentView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(item.text)
                             .lineLimit(2)
+                            .foregroundStyle(LucyTheme.text)
                         if let error = item.errorMessage {
                             Text(error)
                                 .font(.caption)
@@ -267,11 +268,11 @@ private struct EmotePicker: View {
             HStack {
                 Text("Emote")
                     .font(.headline)
-                    .foregroundStyle(LucyTheme.plum)
+                    .foregroundStyle(LucyTheme.text)
                 Spacer()
                 Button("Close", action: onClose)
                     .buttonStyle(.borderless)
-                    .foregroundStyle(LucyTheme.plum)
+                    .foregroundStyle(LucyTheme.text)
             }
             LazyVGrid(columns: columns, alignment: .leading, spacing: 8) {
                 ForEach(fishEmoteTags, id: \.self) { tag in
@@ -314,11 +315,11 @@ private struct PhraseCatalogPopover: View {
             HStack {
                 Text("Phrases")
                     .font(.headline)
-                    .foregroundStyle(LucyTheme.plum)
+                    .foregroundStyle(LucyTheme.text)
                 Spacer()
                 Button("Close", action: onClose)
                     .buttonStyle(.borderless)
-                    .foregroundStyle(LucyTheme.plum)
+                    .foregroundStyle(LucyTheme.text)
             }
 
             TextField("Search phrases", text: $searchText)
@@ -353,7 +354,7 @@ private struct PhraseCatalogPopover: View {
         Button(action: action) {
             Text(title)
                 .font(.caption.weight(.semibold))
-                .foregroundStyle(isSelected ? LucyTheme.cream : LucyTheme.plum)
+                .foregroundStyle(isSelected ? LucyTheme.cream : LucyTheme.text)
                 .lineLimit(1)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 7)
@@ -415,7 +416,7 @@ private struct PhraseCatalogPopover: View {
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
             .font(.caption.weight(.semibold))
-            .foregroundStyle(LucyTheme.plum.opacity(0.62))
+            .foregroundStyle(LucyTheme.textMuted)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.top, 4)
     }
@@ -460,6 +461,7 @@ private struct PhraseCatalogPopover: View {
                 Text(item.text)
                     .font(.body.weight(.semibold))
                     .lineLimit(3)
+                    .foregroundStyle(LucyTheme.text)
                 Text(item.state.rawValue)
                     .font(.caption)
                     .foregroundStyle(item.state == .error ? .red : .secondary)
@@ -501,7 +503,7 @@ private struct PhraseCatalogPopover: View {
         Button(action: action) {
             Text(text)
                 .font(.body.weight(.semibold))
-                .foregroundStyle(LucyTheme.plum)
+                .foregroundStyle(LucyTheme.text)
                 .multilineTextAlignment(.leading)
                 .lineLimit(4)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -514,7 +516,7 @@ private struct PhraseCatalogPopover: View {
 
     private func emptyState(_ text: String) -> some View {
         Text(text)
-            .foregroundStyle(LucyTheme.plum.opacity(0.62))
+            .foregroundStyle(LucyTheme.textMuted)
             .frame(maxWidth: .infinity, minHeight: 160)
     }
 }
@@ -540,9 +542,9 @@ private struct SetupView: View {
         VStack(spacing: 14) {
             Text("Fish Audio API key required")
                 .font(.title2.bold())
-                .foregroundStyle(LucyTheme.plum)
+                .foregroundStyle(LucyTheme.text)
             Text("Paste your key once. It will be stored in macOS Keychain and the app can launch normally after that.")
-                .foregroundStyle(LucyTheme.plum.opacity(0.72))
+                .foregroundStyle(LucyTheme.textSecondary)
                 .multilineTextAlignment(.center)
             Button("Open API Key Setup") {
                 showSettings = true
